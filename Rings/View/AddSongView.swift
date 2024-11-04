@@ -8,16 +8,30 @@
 import Foundation
 import SwiftUI
 
-struct AddSongView: View{
+struct AddSongView: View {
+    
+    enum inputFocus: Int, Hashable{
+        case youtubeLink, fileName
+    }
     
     @State private var songName: String = ""
     @State private var songURL: String = ""
     @StateObject var server = ServerCommunicator()
     @State private var showError: Bool = false
-    
+    @State private var  showConnectError: Bool = false
     @State private var loadingFile: Bool = false
     @Binding var navPath: NavigationPath
     @StateObject var fileChecker: FilesChecker
+    @FocusState private var focusedField: inputFocus?
+    @State private var tappedSaveSong: Bool = false
+    @State private var errorMessage = ""
+    
+    
+    func setErrorMessage(errorMsg: String) {
+        errorMessage = errorMsg
+        
+    }
+    
     private let invalidCharacters = CharacterSet(charactersIn: "\\/:*?\"<>|")
     
     private var filledOut: Bool {
@@ -58,69 +72,108 @@ struct AddSongView: View{
         }
     }
     
-    var body: some View{
-        NavigationStack{
+    var body: some View {
             ZStack{
-                VStack{
+                AppColors.backgroundColor.ignoresSafeArea()
+                
                     Form{
                         Section{
                             TextField("Name", text: $songName)
                                 .onChange(of: songName){ newValue in
                                     validFileName(newValue)
                                 }
+                                .focused($focusedField, equals: .fileName)
                         }
                         
                         Section{
                             TextField("YouTube URL", text: $songURL)
                                 .autocapitalization(.none)
+                                .focused($focusedField, equals: .youtubeLink)
+                                
                         }
                         
                         Section{
                             Button(
                                 action:{
                                     print("adding Song")
+                                    //remove keyboard from view
+                                    focusedField = nil
                                     checkIfURLExists(songURL){ check in
                                         if check == false{
                                             showError.toggle()
+                                            setErrorMessage(errorMsg: "Please Enter a Valid YouTube URL")
+                                        }
+                                        else{
+                                            tappedSaveSong = true
+                                            server.fileName = songName
+                                            server.youtubeLink = songURL
+                                            server.sendYouTubeLink(inputURL: fileChecker.folderPath){ fileURL in
+                                            if let fileURL = fileURL {
+                                                print("MP3 saved to: \(fileURL.path)")
+                                                
+                                                
+                                                //Dismiss the Navigation Path back to the root view
+                                                
+                                                DispatchQueue.main.async {
+                                                    fileChecker.updateFileList()
+                                                }
+
+                                                navPath.removeLast()
+                                                
+                                            } else {
+                                                
+                                                // Show error for failed mp3 download
+                                                showConnectError.toggle()
+                                                setErrorMessage(errorMsg: "Failed to Connect to Server")
+                                                
+                                            }
                                         }
                                     }
-                                    server.fileName = songName
-                                    server.youtubeLink = songURL
-                                    server.sendYouTubeLink(){ fileURL in
-                                    if let fileURL = fileURL {
-                                        print("MP3 saved to: \(fileURL.path)")
-                                        // Use the file URL as needed, e.g., play the audio or move it to another directory
-                                    } else {
-                                        print("Failed to download and save the MP3 file.")
-                                    }
+                        
                                 }
                                     
                                 },
                                 label:{
                                     Text("Save Song")
                                 }
-                            ).disabled(!filledOut)
+                            )
+                            .disabled(!filledOut)
+                            .opacity(server.isLoading ? 0 : 1)
+                        }
+                    }
+                    .opacity(server.isLoading ? 0 : 1)
+                    
+                
+                if server.isLoading{
+                    ZStack{
+                        
+                        HStack{
+                            LoadingView(color: AppColors.secondary)
                         }
                     }
                     
                 }
-                if server.isLoading{
-                    HStack{
-                        LoadingView(color: Color.blue)
-                    }
-                }
                 
                 
                 
                 
+            }
+            .onAppear{
+                focusedField = nil
             }
             .navigationTitle("Add Song")
             .alert("Invalid YouTube URL", isPresented: $showError) {
                 Button("OK") {}
             } message: {
-                Text("Please Enter a Valid YouTube URL")
+                Text("\(errorMessage)")
             }
-        }
+            .alert("Server Connectivity", isPresented: $showConnectError) {
+                Button("OK") {}
+            } message: {
+                Text("\(errorMessage)")
+            }
+            .navigationBarBackButtonHidden(server.isLoading)
+        
         
     }
 }

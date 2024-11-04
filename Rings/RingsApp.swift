@@ -6,7 +6,7 @@
 //
 
 import SwiftUI
-import SwiftData
+
 
 @main
 struct RingsApp: App {
@@ -23,7 +23,7 @@ struct RingsApp: App {
                     
                 }
                 
-        }.modelContainer(for: Song.self)
+        }
     }
     func createCustomFolder(named folderName: String) {
         let fileManager = FileManager.default

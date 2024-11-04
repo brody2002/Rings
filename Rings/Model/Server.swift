@@ -15,7 +15,7 @@ class ServerCommunicator: NSObject, UIDocumentPickerDelegate, ObservableObject{
     var fileName: String
     var youtubeLink: String
     var isLoading: Bool = false
-    private let serverLink: String = "https://e27f-157-131-246-142.ngrok-free.app/convert"
+    private let serverLink: String = "http://192.168.0.209:5002/convert"
     
     init(fileName: String = "", youtubeLink: String = "") {
         self.fileName = fileName
@@ -33,7 +33,7 @@ class ServerCommunicator: NSObject, UIDocumentPickerDelegate, ObservableObject{
         }
     }
     
-    func sendYouTubeLink(completion: @escaping (URL?) -> Void) {
+    func sendYouTubeLink(inputURL: URL, completion: @escaping (URL?) -> Void) {
         guard let requestUrl = URL(string: serverLink) else { return }
         let requestBody: [String: Any] = ["url": youtubeLink]
         guard let jsonData = try? JSONSerialization.data(withJSONObject: requestBody) else { return }
@@ -43,38 +43,47 @@ class ServerCommunicator: NSObject, UIDocumentPickerDelegate, ObservableObject{
         request.addValue("application/json", forHTTPHeaderField: "Content-Type")
         request.httpBody = jsonData
         print("sending request")
-    
-        self.isLoading = true
+        
+        withAnimation{
+            self.isLoading = true
+        }
+        
+        
+        
         
         let task = URLSession.shared.dataTask(with: request) { data, response, error in
             if let error = error {
                 print("Error: \(error)")
+                self.isLoading = false
                 completion(nil)
                 return
             }
             
             guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 else {
                 print("Server returned an error")
+                self.isLoading = false
                 completion(nil)
                 return
             }
             
            
             if let data = data {
-                self.isLoading = false
+                withAnimation{
+                    self.isLoading = false
+                }
                 // Save temporarily in app's cache directory
                 let tempDirectoryURL = FileManager.default.temporaryDirectory
                 
                 //URL INPUT HERE
                 let fileURL = tempDirectoryURL.appendingPathComponent("\(self.fileName).mp3")
+                let outputURL = inputURL.appendingPathComponent("\(self.fileName).mp3")
+                print("fileURL: \(fileURL)")
+                print("outputURL: \(outputURL)")
                 
                 do {
-                    try data.write(to: fileURL)
+                    try data.write(to: outputURL)
                     // Present document picker for user to save in Files app
-                    DispatchQueue.main.async {
-                        self.saveToFilesApp(fileURL: fileURL)
-                    }
-                    completion(fileURL)
+                    completion(outputURL)
                 } catch {
                     print("File saving error: \(error)")
                     completion(nil)
