@@ -13,11 +13,6 @@ import UIKit
 
 
 struct PlaySoundButtonView: View {
-    @State var isPlaying: Bool = false
-    @State var songStarted: Bool = false
-    
-    
-    
     @State private var buttonColor: Color = Color.black
     @State var fileURL: URL
     @State private var documentInteractionController: UIDocumentInteractionController?
@@ -41,33 +36,30 @@ struct PlaySoundButtonView: View {
                 
                 
                 //TODO: fix the audioProgress view:
+                // Issue 1: before even running there is still blue present Blue also moves along all songs.
+                // Issue 2: playing another song doesn't pause the others by default
+                // Issue 3: Time Length Units incorrect
+                
+                
+                // Remeber the previous URL and clear ther audioProgress value to 0
+                // set the ui play button = to false because it's not paused.
+                
+                
                 Circle()
-                    .trim(from: 0.0, to: CGFloat(GAP.audioProgress) / fileLength)
+                    .trim(from: 0.0, to: CGFloat(GAP.progressBySong[fileURL] ?? 0) / fileLength)
                     .stroke(style: StrokeStyle(lineWidth: 2.5, lineCap: .round, lineJoin: .round))
                     .foregroundStyle(AppColors.secondary)
-                
-                Image(systemName: isPlaying ? "pause" : "play")
-                    .foregroundStyle(buttonColor)
+
+                Image(systemName: GAP.songIsPlayingByURL[fileURL] ?? false ? "pause" : "play")
+                                    .foregroundStyle(buttonColor)
             }
             .frame(width: 40, height: 40)
             .onTapGesture {
-                isPlaying.toggle()
-                if isPlaying == true {
-                    if songStarted == false{
-                        // start song for the first time
-                        GAP.loadAudioPlayer(url: fileURL)
-                        print("starting song")
-                        songStarted = true
-                    }
-                    GAP.play(url: fileURL)
-                    GAP.startTimer()
-                    
+                if GAP.songIsPlayingByURL[fileURL] ?? false {
+                    GAP.pause(url: fileURL)
                 } else {
-                    print("pausing audio")
-                    GAP.pause(url:fileURL)
-                    GAP.stopTimer()
+                    GAP.play(url: fileURL)
                 }
-                
             }
         }
         
