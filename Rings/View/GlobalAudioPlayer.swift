@@ -53,7 +53,7 @@ class GlobalAudioPlayer: ObservableObject {
             print("error playing audio as a shared Instance")
         }
     }
-    
+     
     func play(url:URL){
         if let started = songStartedByURL[url], started && self.prevURL == url{
             print("song resumed at \(url.lastPathComponent)")
@@ -62,12 +62,18 @@ class GlobalAudioPlayer: ObservableObject {
         }
         else {
             stopTimer()
-            self.resetProgress(for: url)
+            let tempURL = url.deletingLastPathComponent()
+            self.resetProgressForAllFiles(in: tempURL)
             print("song playing for the first time at \(url.lastPathComponent)")
             loadAudioPlayer(url: url)
             playbackHelper(url: url)
             
         }
+        
+        // if we are playing something new or first time playing at all
+        // load the AudioPlayer
+        // else resume
+        
     }
     
     func pause(url: URL) {
@@ -92,11 +98,25 @@ class GlobalAudioPlayer: ObservableObject {
     }
     
     
-    // Resets the blue progress bar
     func resetProgress(for url: URL) {
-        print("reseting progressBySong of \(url.lastPathComponent)")
-        self.audioProgressDict[url] = 0.0
-            songStartedByURL[url] = false
+        print("Resetting progressBySong of \(url.lastPathComponent)")
+        audioProgressDict[url] = 0.0
+        songStartedByURL[url] = false
+    }
+
+    // Function to reset progress for all files within a given directory
+    func resetProgressForAllFiles(in directoryURL: URL) {
+        do {
+            // Retrieve all file URLs within the directory
+            let fileURLs = try FileManager.default.contentsOfDirectory(at: directoryURL, includingPropertiesForKeys: nil)
+            
+            // Iterate over each file URL and reset progress
+            for fileURL in fileURLs {
+                resetProgress(for: fileURL)
+            }
+        } catch {
+            print("Error fetching contents of directory: \(error)")
+        }
     }
 }
 
