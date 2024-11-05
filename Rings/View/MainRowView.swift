@@ -14,6 +14,7 @@ struct MainRowView: View {
     @State var fileURL: URL
     @StateObject var GAP: GlobalAudioPlayer
     @State private var holdingRow: Bool = false
+    @Binding var navPath: NavigationPath
     
     
     var body: some View {
@@ -42,6 +43,11 @@ struct MainRowView: View {
             }
         }
         .frame(height: 80)
+        .onTapGesture {
+            //Slice Audio View
+            print("ROW TAP")
+            navPath.append(Destination.sliceAudioView(fileURL: fileURL))
+        }
         .onLongPressGesture(minimumDuration: 0.05, pressing: { pressing in
             withAnimation{ holdingRow = pressing }
         },perform: {})
@@ -50,9 +56,11 @@ struct MainRowView: View {
 }
 
 #Preview {
+    
+    
     ZStack{
         Color.green.ignoresSafeArea()
-        MainRowView(fileName: "OnePieceOP.mp3", fileSize: "8Mb", fileLength: 221.0, fileURL: URL(fileURLWithPath: ""), GAP: GlobalAudioPlayer())
+        MainRowView(fileName: "OnePieceOP.mp3", fileSize: "8Mb", fileLength: 221.0, fileURL: URL(fileURLWithPath: ""), GAP: GlobalAudioPlayer(),navPath: .constant(NavigationPath()))
     }
    
 }

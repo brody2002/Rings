@@ -4,7 +4,7 @@ import AVFoundation
 
 enum Destination: Hashable {
     case addSongView
-    case sliceAudioView
+    case sliceAudioView(fileURL: URL)
 }
 
 struct mainView: View {
@@ -34,7 +34,8 @@ struct mainView: View {
                     Form {
                         List {
                             ForEach(fileChecker.fileList, id: \.self) { file in
-                                MainRowView(fileName: file.name, fileSize: file.size.toFileSizeString(), fileLength: file.length ?? 0.0, fileURL: file.fileURL, GAP: GAP)
+                                MainRowView(fileName: file.name, fileSize: file.size.toFileSizeString(), fileLength: file.length ?? 0.0, fileURL: file.fileURL, GAP: GAP, navPath: $navPath)
+                                    
                             }
                             .onDelete { indexSet in
                                     indexSet.forEach { index in
@@ -42,10 +43,7 @@ struct mainView: View {
                                         fileChecker.deleteSongFile(fileName: file.name)
                                     }
                             }
-                            .onTapGesture {
-                                //Slice Audio View
-                                navPath.append(Destination.sliceAudioView)
-                            }
+                            
                         }
                     }
                     .scrollContentBackground(.hidden)
@@ -81,8 +79,8 @@ struct mainView: View {
                 switch destination {
                 case .addSongView:
                     AddSongView(navPath: $navPath, fileChecker: fileChecker)
-                case .sliceAudioView:
-                    SliceAudioView()
+                case .sliceAudioView(let fileURL):
+                    SliceAudioView(fileURL: fileURL)
                 }
     
             }

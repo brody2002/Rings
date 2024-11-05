@@ -49,3 +49,7 @@ struct LoadingView: View {
         }
     }
 }
+
+#Preview{
+    LoadingView(color: Color.orange)
+}
