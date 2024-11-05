@@ -21,7 +21,7 @@ class GlobalAudioPlayer: ObservableObject {
     
     //set previous URL somewhere
     func loadAudioPlayer(url: URL){
-        let currentURL = url
+        
         do{
             // Stop the currently playing audio if any
             if audioPlayer?.isPlaying == true {
@@ -32,7 +32,7 @@ class GlobalAudioPlayer: ObservableObject {
             
             audioPlayer!.prepareToPlay()
             audioPlayer!.volume = 1.0
-            audioProgressDict[currentURL] = 0.0
+            audioProgressDict[url] = 0.0
         }
         catch let error as NSError {
             print(error.localizedDescription)
@@ -55,15 +55,17 @@ class GlobalAudioPlayer: ObservableObject {
     }
      
     func play(url:URL){
+        let tempURL = url.deletingLastPathComponent()
+        
         if let started = songStartedByURL[url], started && self.prevURL == url{
             print("song resumed at \(url.lastPathComponent)")
+            self.resetProgressForAllOtherFiles(in: tempURL, url: url)
             playbackHelper(url: url)
             
         }
         else {
             stopTimer()
-            let tempURL = url.deletingLastPathComponent()
-            self.resetProgressForAllFiles(in: tempURL)
+            self.resetProgressForAllOtherFiles(in: tempURL, url: url)
             print("song playing for the first time at \(url.lastPathComponent)")
             loadAudioPlayer(url: url)
             playbackHelper(url: url)
@@ -100,19 +102,27 @@ class GlobalAudioPlayer: ObservableObject {
     
     func resetProgress(for url: URL) {
         print("Resetting progressBySong of \(url.lastPathComponent)")
-        audioProgressDict[url] = 0.0
-        songStartedByURL[url] = false
+        stopTimer()
+    
+        withAnimation{
+            audioProgressDict[url] = 0.0
+            songStartedByURL[url] = false
+        }
     }
 
     // Function to reset progress for all files within a given directory
-    func resetProgressForAllFiles(in directoryURL: URL) {
+    func resetProgressForAllOtherFiles(in directoryURL: URL, url: URL) {
         do {
             // Retrieve all file URLs within the directory
             let fileURLs = try FileManager.default.contentsOfDirectory(at: directoryURL, includingPropertiesForKeys: nil)
             
             // Iterate over each file URL and reset progress
             for fileURL in fileURLs {
-                resetProgress(for: fileURL)
+                if fileURL != url{
+                    resetProgress(for: fileURL)
+                    isPlayingDict[fileURL] = false
+                }
+                
             }
         } catch {
             print("Error fetching contents of directory: \(error)")

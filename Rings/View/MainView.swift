@@ -13,7 +13,8 @@ struct mainView: View {
     @State private var mainColor = AppColors.backgroundColor
     @StateObject var fileChecker: FilesChecker
     @State var navPath = NavigationPath()
-    @StateObject var GAP: GlobalAudioPlayer
+    @StateObject var GAP = GlobalAudioPlayer()
+    
     
     
     
@@ -27,7 +28,9 @@ struct mainView: View {
                             .foregroundStyle(AppColors.secondary)
                             .font(.system(size: 30))
                             .bold()
+                            .padding(.top, 30)
                     }
+                    Spacer()
                     Form {
                         List {
                             ForEach(fileChecker.fileList, id: \.self) { file in
@@ -47,6 +50,7 @@ struct mainView: View {
                     }
                     .scrollContentBackground(.hidden)
                     .background(mainColor)
+                    Spacer()
                     
                     Spacer()
                     
@@ -63,7 +67,13 @@ struct mainView: View {
                                 .frame(width: 30, height: 30)
                                 .foregroundStyle(mainColor)
                         }
-                        }
+                    }.padding(.bottom , 20)
+                }
+            }
+            .onAppear{
+                fileChecker.fileList = fileChecker.findFiles()
+                for file in fileChecker.fileList {
+                    GAP.isPlayingDict[file.fileURL] = false
                 }
             }
             // Use navigationDestination to map Destination cases to views if needed for other cases

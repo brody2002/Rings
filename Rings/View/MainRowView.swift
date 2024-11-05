@@ -13,6 +13,8 @@ struct MainRowView: View {
     @State var fileLength: CGFloat
     @State var fileURL: URL
     @StateObject var GAP: GlobalAudioPlayer
+    @State private var holdingRow: Bool = false
+    
     
     var body: some View {
         ZStack{
@@ -40,6 +42,10 @@ struct MainRowView: View {
             }
         }
         .frame(height: 80)
+        .onLongPressGesture(minimumDuration: 0.05, pressing: { pressing in
+            withAnimation{ holdingRow = pressing }
+        },perform: {})
+        .opacity(holdingRow ? 0.4 : 1.0)
     }
 }
 

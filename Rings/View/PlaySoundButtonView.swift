@@ -20,12 +20,14 @@ struct PlaySoundButtonView: View {
     
     @StateObject var GAP: GlobalAudioPlayer
     
+    @State private var buttonHold: Bool = false
+    
     
 
 
     var fileLength: CGFloat
     
-
+    
     var body: some View {
         VStack {
             ZStack {
@@ -49,21 +51,37 @@ struct PlaySoundButtonView: View {
                     .trim(from: 0.0, to: CGFloat(GAP.audioProgressDict[fileURL] ?? 0.0) / fileLength)
                     .stroke(style: StrokeStyle(lineWidth: 2.5, lineCap: .round, lineJoin: .round))
                     .foregroundStyle(AppColors.secondary)
-                    .onChange(of: GAP.audioProgressDict[fileURL]) { value in
-                        print("\(fileURL.lastPathComponent) is being changed")
-                    }
+//                    .onChange(of: GAP.audioProgressDict[fileURL]) { value in
+//                        print("\(fileURL.lastPathComponent) is being changed")
+//                    }
+                    
 
-                Image(systemName: GAP.isPlayingDict[fileURL]! ? "pause" : "play")
+                Image(systemName: (GAP.isPlayingDict[fileURL] ?? false) ? "pause" : "play")
                                     .foregroundStyle(buttonColor)
             }
             .frame(width: 40, height: 40)
             .onTapGesture {
                 if GAP.isPlayingDict[fileURL]! {
-                                GAP.pause(url: fileURL)
-                            } else {
-                                GAP.play(url: fileURL)
-                            }
-                        }
+                    GAP.pause(url: fileURL)
+                } else {
+                    GAP.play(url: fileURL)
+                }
+            }
+            .onLongPressGesture(minimumDuration: 0.4, // Duration in seconds
+                pressing: { isPressing in
+                    if (GAP.isPlayingDict[fileURL] ?? false) == false{
+                        buttonHold = isPressing
+                    }
+                    
+                },
+                perform: {
+                    if buttonHold{
+                        triggerHapticFeedback()
+                        GAP.resetProgress(for: fileURL)
+                        
+                    }
+                }
+            )
         }
         
     }
@@ -75,6 +93,11 @@ struct PlaySoundButtonView: View {
             if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene {
                 documentInteractionController?.presentPreview(animated: true)
             }
+    }
+    
+    func triggerHapticFeedback() {
+        let impactFeedback = UIImpactFeedbackGenerator(style: .medium)
+            impactFeedback.impactOccurred() // Perform the feedback
     }
     
 }

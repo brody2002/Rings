@@ -12,22 +12,13 @@ import SwiftUI
 struct RingsApp: App {
     @State var folderURL: URL = URL(fileURLWithPath: "")
     @StateObject var fileCheck = FilesChecker()
-    @StateObject var GAP = GlobalAudioPlayer()
     var body: some Scene {
         WindowGroup {
-            mainView(fileChecker: fileCheck, GAP: GAP)
+            mainView(fileChecker: fileCheck)
                 .onAppear{
                     createCustomFolder(named: "AddedSongs")
                     fileCheck.folderPath = folderURL
                     fileCheck.fileList = fileCheck.findFiles()
-                    
-                    
-                    
-                    for file in fileCheck.fileList {
-                        GAP.isPlayingDict[file.fileURL] = false
-                    }
-                    
-                    
                 }
                 
         }
