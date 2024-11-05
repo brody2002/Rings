@@ -13,7 +13,7 @@ struct mainView: View {
     @State private var mainColor = AppColors.backgroundColor
     @StateObject var fileChecker: FilesChecker
     @State var navPath = NavigationPath()
-    @StateObject var GAP = GlobalAudioPlayer()
+    @StateObject var GAP: GlobalAudioPlayer
     
     
     
@@ -86,7 +86,7 @@ struct mainView: View {
         let sampleFileChecker = FilesChecker()
         sampleFileChecker.folderPath = URL(fileURLWithPath: "/sample/path/to/folder")
         
-        return mainView(fileChecker: sampleFileChecker)
+        return mainView(fileChecker: sampleFileChecker, GAP: GlobalAudioPlayer())
     }
     catch{
         print("cant outputview")

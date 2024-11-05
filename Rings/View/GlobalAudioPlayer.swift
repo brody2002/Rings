@@ -12,81 +12,76 @@ import SwiftUI
 class GlobalAudioPlayer: ObservableObject {
     var audioPlayer: AVAudioPlayer?
     var playbackTimer: Timer?
-    var audioProgress: Float = 0.0
     var prevURL: URL = URL(fileURLWithPath: "")
-    var progressBySong: [URL: Float] = [:]
-    var songStartedByURL: [URL: Bool] = [:] // Track whether each song has started
-    var songIsPlayingByURL: [URL: Bool] = [:]// Track whether each Song is in pause or play state
     
-    func loadAudioPlayer(url: URL) {
-        do {
+    // file info
+    var audioProgressDict: [URL: Float] = [:] // Blue progress bar
+    var isPlayingDict: [URL:Bool] = [:] // Track play/pause state for view
+    var songStartedByURL: [URL: Bool] = [:] // Track whether each song has started
+    
+    //set previous URL somewhere
+    func loadAudioPlayer(url: URL){
+        let currentURL = url
+        do{
             // Stop the currently playing audio if any
             if audioPlayer?.isPlaying == true {
                 audioPlayer?.stop()
             }
             // Load and prepare new audio
             self.audioPlayer = try AVAudioPlayer(contentsOf: url)
-            self.prevURL = url
-            resetProgress(for: self.prevURL)
+            
             audioPlayer!.prepareToPlay()
             audioPlayer!.volume = 1.0
-            audioProgress = 0.0
-        } catch let error as NSError {
+            audioProgressDict[currentURL] = 0.0
+        }
+        catch let error as NSError {
             print(error.localizedDescription)
         } catch {
             print("AVAudioPlayer init failed")
         }
     }
-    
-    func play(url: URL) {
-        if let started = songStartedByURL[url], started && url == self.prevURL{
-            // Stop the currently playing audio, if any, to prevent overlap
-            
-                //Continue playing from resumed point
-                print("resuming AudioPlayer")
-                do {
-                    try AVAudioSession.sharedInstance().setCategory(AVAudioSession.Category.playback)
-                    audioPlayer?.play()
-                } catch {
-                    // report for an error
-                    print("error playing audio as a shardInstance")
-                }
-        } else {
-            //Reload AudioPlayer
-            do {
-                try AVAudioSession.sharedInstance().setCategory(AVAudioSession.Category.playback)
-                print("reloading AudioPlayer")
-                loadAudioPlayer(url: url)
-                
-                audioPlayer?.play()
-                songStartedByURL[url] = true
-            } catch {
-                // report for an error
-                print("error playing audio as a shardInstance")
-            }
+    func playbackHelper(url: URL){
+        do {
+            try AVAudioSession.sharedInstance().setCategory(AVAudioSession.Category.playback)
+            audioPlayer?.play()
+            songStartedByURL[url] = true
+            isPlayingDict[url] = true
+            startTimer(url: url)
             
         }
-        songIsPlayingByURL[url] = true
-        startTimer(url: url)
-        
+        catch {
+            print("error playing audio as a shared Instance")
+        }
     }
-
+    
+    func play(url:URL){
+        if let started = songStartedByURL[url], started && self.prevURL == url{
+            print("song resumed at \(url.lastPathComponent)")
+            playbackHelper(url: url)
+            
+        }
+        else {
+            stopTimer()
+            self.resetProgress(for: url)
+            print("song playing for the first time at \(url.lastPathComponent)")
+            loadAudioPlayer(url: url)
+            playbackHelper(url: url)
+            
+        }
+    }
     
     func pause(url: URL) {
+        print("pausing song at \(url.lastPathComponent)")
         audioPlayer?.pause()
-        songIsPlayingByURL[url] = false
+        isPlayingDict[url] = false
+        self.prevURL = url
     }
     
     func startTimer(url: URL) {
-        playbackTimer = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true) { _ in
+        playbackTimer = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: isPlayingDict[url]!) { _ in
             if let currentTime = self.audioPlayer?.currentTime {
-                self.progressBySong[url] = Float(currentTime)
-                if currentTime == 0.0 {
-                    // reset values of the play button
-                    self.stopTimer()
-                    self.resetProgress(for: url)
-                    //turn pause button to play button.
-                }
+                self.audioProgressDict[url] = Float(currentTime)
+
             }
         }
     }
@@ -96,12 +91,12 @@ class GlobalAudioPlayer: ObservableObject {
         playbackTimer = nil
     }
     
+    
     // Resets the blue progress bar
     func resetProgress(for url: URL) {
-        
-        self.progressBySong[url] = 0
-        print("changed progress of \n\(url) to \(self.progressBySong[url])")
-        self.songStartedByURL[url] = false
+        print("reseting progressBySong of \(url.lastPathComponent)")
+        self.audioProgressDict[url] = 0.0
+            songStartedByURL[url] = false
     }
 }
 

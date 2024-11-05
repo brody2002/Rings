@@ -53,7 +53,7 @@ class FilesChecker: ObservableObject {
         
         do {
             let fileURLs = try fileManager.contentsOfDirectory(at: folderPath, includingPropertiesForKeys: [.fileSizeKey])
-            print("\n\nFolderPath: \(folderPath)\n\nFileURLs: \(fileURLs)")
+            print("\n\nFolderPath: \(folderPath)\n\nFileURLs: \(fileURLs)\n\n")
             for fileURL in fileURLs {
                 let fileName = fileURL.lastPathComponent
                 let attributes = try fileURL.resourceValues(forKeys: [.fileSizeKey])
@@ -71,7 +71,7 @@ class FilesChecker: ObservableObject {
                 
                 let fileSize = attributes.fileSize ?? 0
                 let fileDetails = FileDetails(name: fileName, size: Int64(fileSize), length: fileLength, fileURL: fileURL)
-                print("\n\nFileDetails: \(fileDetails)\n\n")
+//                print("\n\nFileDetails: \(fileDetails)\n\n")
                 fileDetailsList.append(fileDetails)
             }
             

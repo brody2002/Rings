@@ -46,21 +46,24 @@ struct PlaySoundButtonView: View {
                 
                 
                 Circle()
-                    .trim(from: 0.0, to: CGFloat(GAP.progressBySong[fileURL] ?? 0) / fileLength)
+                    .trim(from: 0.0, to: CGFloat(GAP.audioProgressDict[fileURL] ?? 0.0) / fileLength)
                     .stroke(style: StrokeStyle(lineWidth: 2.5, lineCap: .round, lineJoin: .round))
                     .foregroundStyle(AppColors.secondary)
+                    .onChange(of: GAP.audioProgressDict[fileURL]) { value in
+                        print("\(fileURL.lastPathComponent) is being changed")
+                    }
 
-                Image(systemName: GAP.songIsPlayingByURL[fileURL] ?? false ? "pause" : "play")
+                Image(systemName: GAP.isPlayingDict[fileURL]! ? "pause" : "play")
                                     .foregroundStyle(buttonColor)
             }
             .frame(width: 40, height: 40)
             .onTapGesture {
-                if GAP.songIsPlayingByURL[fileURL] ?? false {
-                    GAP.pause(url: fileURL)
-                } else {
-                    GAP.play(url: fileURL)
-                }
-            }
+                if GAP.isPlayingDict[fileURL]! {
+                                GAP.pause(url: fileURL)
+                            } else {
+                                GAP.play(url: fileURL)
+                            }
+                        }
         }
         
     }
