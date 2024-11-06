@@ -18,7 +18,7 @@ class GlobalAudioPlayer: ObservableObject {
     var audioProgressDict: [URL: Float] = [:] // Blue progress bar
     var isPlayingDict: [URL:Bool] = [:] // Track play/pause state for view
     var songStartedByURL: [URL: Bool] = [:] // Track whether each song has started
-    
+    var currentURL: URL? = nil
     //set previous URL somewhere
     func loadAudioPlayer(url: URL){
         
@@ -55,6 +55,7 @@ class GlobalAudioPlayer: ObservableObject {
     }
      
     func play(url:URL){
+        self.currentURL  = url
         let tempURL = url.deletingLastPathComponent()
         
         if let started = songStartedByURL[url], started && self.prevURL == url{
@@ -126,6 +127,17 @@ class GlobalAudioPlayer: ObservableObject {
             }
         } catch {
             print("Error fetching contents of directory: \(error)")
+        }
+    }
+    
+    func killGAP(){
+        // NOT WORKING :(
+        if currentURL != nil{
+            audioPlayer?.pause()
+            isPlayingDict[currentURL!] = false
+            self.prevURL = currentURL!
+            stopTimer()
+            resetProgress(for: currentURL!)
         }
     }
 }

@@ -60,6 +60,8 @@ struct MainRowView: View {
             //Slice Audio View
             print("ROW TAP")
             navPath.append(Destination.sliceAudioView(fileURL: fileURL, fileName: fileName, fileLength: fileLength))
+            GAP.stopTimer()
+            
         }
         .onLongPressGesture(minimumDuration: 0.05, pressing: { pressing in
             withAnimation{ holdingRow = pressing }

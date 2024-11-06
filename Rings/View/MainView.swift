@@ -16,6 +16,11 @@ struct mainView: View {
     @StateObject var GAP = GlobalAudioPlayer()
     
     
+    //TODO:
+    // * entering the chop view I need to kill the GAP and refresh the blue progress bars
+    // * I need to implement the audio chop. Give two options:
+    //   1. Overwrite file, 2. Make copy.
+    
     
     
     var body: some View {

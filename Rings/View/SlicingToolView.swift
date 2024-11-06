@@ -1,10 +1,11 @@
 import SwiftUI
 
 struct Bar: View {
-    @State private var capsuleStartRatio: CGFloat = 0.00
-    @State private var capsuleEndRatio: CGFloat = 0.9778368523780335
+    
     var capsuleWidth: CGFloat = 26.0
     var fileLength: CGFloat
+    @Binding var capsuleStartRatio: CGFloat
+    @Binding var capsuleEndRatio: CGFloat
     
     var body: some View {
         ZStack{
@@ -47,7 +48,7 @@ struct Bar: View {
                             
                             Capsule()
                                 .frame(width: capsuleWidth, height: 38)
-                                .offset(x: capsuleEndRatio * totalWidth - capsuleWidth)
+                                .offset(x: capsuleEndRatio * totalWidth - (capsuleWidth))
                                 .gesture(
                                     DragGesture()
                                         .onChanged { value in
@@ -74,15 +75,18 @@ struct Bar: View {
 
 struct CustomSlider: View {
     var fileLength: CGFloat
+    @Binding var capsuleStartRatio: CGFloat
+    @Binding var capsuleEndRatio: CGFloat
     var body: some View {
-        Bar(fileLength: fileLength)
+        Bar(fileLength: fileLength, capsuleStartRatio: $capsuleStartRatio, capsuleEndRatio: $capsuleEndRatio)
             .frame(height: 10)
     }
 }
 
 #Preview {
-    
-    Bar(fileLength: 200.0)
+    @Previewable @State var start: CGFloat = 0.0
+    @Previewable @State var end: CGFloat = 1.0
+    Bar(fileLength: 200.0, capsuleStartRatio: $start, capsuleEndRatio: $end)
     
     
 }
