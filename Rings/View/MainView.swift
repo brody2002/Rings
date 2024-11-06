@@ -4,7 +4,7 @@ import AVFoundation
 
 enum Destination: Hashable {
     case addSongView
-    case sliceAudioView(fileURL: URL)
+    case sliceAudioView(fileURL: URL, fileName: String, fileLength: CGFloat)
 }
 
 struct mainView: View {
@@ -24,7 +24,7 @@ struct mainView: View {
                 mainColor.ignoresSafeArea()
                 VStack {
                     HStack {
-                        Text("Songs: ")
+                        Text("Song List")
                             .foregroundStyle(AppColors.secondary)
                             .font(.system(size: 30))
                             .bold()
@@ -46,13 +46,11 @@ struct mainView: View {
                             
                         }
                     }
+                    .frame(maxWidth: .infinity, maxHeight: UIScreen.main.bounds.height * 0.7)
                     .scrollContentBackground(.hidden)
                     .background(mainColor)
                     Spacer()
-                    
-                    Spacer()
-                    
-                    // Use NavigationLink directly to navigate to AddSongView
+
                     Button(action: {
                         navPath.append(Destination.addSongView)
                     }) {
@@ -79,8 +77,8 @@ struct mainView: View {
                 switch destination {
                 case .addSongView:
                     AddSongView(navPath: $navPath, fileChecker: fileChecker)
-                case .sliceAudioView(let fileURL):
-                    SliceAudioView(fileURL: fileURL)
+                case .sliceAudioView(let fileURL, let fileName, let fileLength):
+                    SliceAudioView(fileURL: fileURL, fileName: fileName, fileLength: fileLength)
                 }
     
             }

@@ -16,6 +16,19 @@ struct MainRowView: View {
     @State private var holdingRow: Bool = false
     @Binding var navPath: NavigationPath
     
+    var convertLength: (CGFloat) -> String = { length in
+        let totalSeconds = Int(length)
+        let hours = totalSeconds / 3600
+        let minutes = (totalSeconds % 3600) / 60
+        let seconds = totalSeconds % 60
+
+        if hours > 0 {
+            return String(format: "%d:%02d:%02d", hours, minutes, seconds) // HH:MM:SS
+        } else {
+            return String(format: "%d:%02d", minutes, seconds) // MM:SS
+        }
+    }
+    
     
     var body: some View {
         ZStack{
@@ -35,7 +48,7 @@ struct MainRowView: View {
                 HStack{
                     Text("\(fileSize)")
                         .font(.system(size: 10))
-                    Text("\(fileLength)")
+                    Text("\(convertLength(fileLength))")
                         .font(.system(size: 10))
                 }
                 Spacer()
@@ -46,7 +59,7 @@ struct MainRowView: View {
         .onTapGesture {
             //Slice Audio View
             print("ROW TAP")
-            navPath.append(Destination.sliceAudioView(fileURL: fileURL))
+            navPath.append(Destination.sliceAudioView(fileURL: fileURL, fileName: fileName, fileLength: fileLength))
         }
         .onLongPressGesture(minimumDuration: 0.05, pressing: { pressing in
             withAnimation{ holdingRow = pressing }
