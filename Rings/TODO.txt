@@ -3,6 +3,8 @@ TODO:
 DONE 0. Fix File checker viewing files. (When I add something new into the folder the app crashes)
 DONE 1. Format The ROWS
 DONE 2. Play Back issues upon moving into new view
-3. Make Knobs become aware of sound timeline
+DONE 3. Make Knobs become aware of sound timeline
+DONE 3.5 Make Knobs have animation when being used
 4. Create the slice, overwrite or create new file
-5. Make Hold feature only apply to the row not the play button (OPTIONAL)
+5. Play from Cut portin of the song in the Slice Audio View
+6. Make Hold feature only apply to the row not the play button (OPTIONAL)

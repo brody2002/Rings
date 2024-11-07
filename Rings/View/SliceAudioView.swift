@@ -16,16 +16,21 @@ struct SliceAudioView: View {
     let fileLength: CGFloat
     
     @State var isWaveFormShowing: Bool = false
+    @State var isHoldingBack: Bool = false
     
     @State var capsuleStartRatio: CGFloat = 0.00
     @State var capsuleEndRatio: CGFloat = 1.0
+    
+    @State var startCut: CGFloat = 0
+    @State var endCut: CGFloat = 0
+    
+    @Binding var navPath: NavigationPath
 
 
     var body: some View {
         GeometryReader{ metrics in
             ZStack {
                 AppColors.backgroundColor.ignoresSafeArea()
-                
                 AudioAssetTimelineBackground(audioUrl: fileURL, isWaveFormShowing: $isWaveFormShowing)
                     .overlay(
                         isWaveFormShowing ? ZStack(alignment: .leading) {
@@ -57,17 +62,45 @@ struct SliceAudioView: View {
                     
                     
                 VStack {
-                    Text("Slice Audio")
-                        .font(.system(size: 26))
-                        .bold()
-                        .foregroundColor(AppColors.secondary)
-                        .padding(.top, 20)
+                    HStack{
+                        Spacer()
+                            .frame(width: 20)
+                        Image(systemName: "arrowshape.turn.up.backward.fill")
+                            .resizable()
+                            .frame(width: 60, height: 60)
+                            .foregroundColor(self.isHoldingBack ? Color.black.opacity(0.6) : Color.black)
+                            .onLongPressGesture(minimumDuration: 0.05, pressing: { pressing in
+                                isHoldingBack = pressing
+                            }, perform: {
+                                if isHoldingBack{
+                                    // remove from navpath
+                                    navPath.removeLast()
+                                }
+                            })
+                        Spacer()
+                            
+                        Text("Slice Audio")
+                            .font(.system(size: 26))
+                            .bold()
+                            .foregroundColor(Color.black)
+                            .padding(.top, 20)
+                        Spacer()
+                        Spacer()
+                    }
+                    
                     Spacer()
                         .frame(height: metrics.size.height * 7/10)
+                    HStack{
+                        Spacer()
+                        Text("Start: \(HandyFunctions.convertLength(startCut))")
+                        Spacer()
+                        Text("End: \(HandyFunctions.convertLength(endCut))")
+                        Spacer()
+                    }
                     
                         
                     
-                    CustomSlider(fileLength: fileLength, capsuleStartRatio: $capsuleStartRatio, capsuleEndRatio: $capsuleEndRatio)
+                    CustomSlider(fileLength: fileLength, capsuleStartRatio: $capsuleStartRatio, capsuleEndRatio: $capsuleEndRatio, startCut: $startCut, endCut: $endCut)
                         .padding()
                     Spacer()
                     Spacer()
@@ -97,16 +130,16 @@ struct SliceAudioView: View {
                         
                 }
             }
-        }
+        }.navigationBarBackButtonHidden(true)
         
     }
 }
 
 
 #Preview {
+    @Previewable @State var navPath = NavigationPath()
     if let testURL = Bundle.main.url(forResource: "Kendrick Lamar - Not Like Us", withExtension: "mp3") {
-        
-        SliceAudioView(fileURL: testURL, fileName: "NOT LIKE US", fileLength: 60.0)
+        SliceAudioView(fileURL: testURL, fileName: "NOT LIKE US", fileLength: 60.0, navPath: $navPath)
             .onAppear{
                 print("TEST URL: \n\(testURL)")
             }

@@ -15,19 +15,7 @@ struct MainRowView: View {
     @StateObject var GAP: GlobalAudioPlayer
     @State private var holdingRow: Bool = false
     @Binding var navPath: NavigationPath
-    
-    var convertLength: (CGFloat) -> String = { length in
-        let totalSeconds = Int(length)
-        let hours = totalSeconds / 3600
-        let minutes = (totalSeconds % 3600) / 60
-        let seconds = totalSeconds % 60
 
-        if hours > 0 {
-            return String(format: "%d:%02d:%02d", hours, minutes, seconds) // HH:MM:SS
-        } else {
-            return String(format: "%d:%02d", minutes, seconds) // MM:SS
-        }
-    }
     
     
     var body: some View {
@@ -49,7 +37,7 @@ struct MainRowView: View {
                 Spacer()
                 VStack{
                     Spacer()
-                    Text("\(convertLength(fileLength))")
+                    Text("\(HandyFunctions.convertLength(fileLength))")
                         .font(.system(size: 10))
                     Spacer()
                         .frame(height: 20)
@@ -67,7 +55,9 @@ struct MainRowView: View {
             //Slice Audio View
             print("ROW TAP")
             navPath.append(Destination.sliceAudioView(fileURL: fileURL, fileName: fileName, fileLength: fileLength))
-            GAP.audioPlayer!.stop()
+            if GAP.audioPlayer?.isPlaying == true {
+                GAP.audioPlayer?.stop()
+            }
             GAP.resetProgress(for: fileURL)
             GAP.resetProgressForAllOtherFiles(in: fileURL.deletingLastPathComponent(), url: fileURL)
             

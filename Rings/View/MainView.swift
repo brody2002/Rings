@@ -2,7 +2,7 @@ import SwiftData
 import SwiftUI
 import AVFoundation
 
-enum Destination: Hashable {
+enum Destination: Hashable{
     case addSongView
     case sliceAudioView(fileURL: URL, fileName: String, fileLength: CGFloat)
 }
@@ -83,7 +83,7 @@ struct mainView: View {
                 case .addSongView:
                     AddSongView(navPath: $navPath, fileChecker: fileChecker)
                 case .sliceAudioView(let fileURL, let fileName, let fileLength):
-                    SliceAudioView(fileURL: fileURL, fileName: fileName, fileLength: fileLength)
+                    SliceAudioView(fileURL: fileURL, fileName: fileName, fileLength: fileLength, navPath: $navPath)
                 }
     
             }
