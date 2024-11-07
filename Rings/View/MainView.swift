@@ -83,7 +83,7 @@ struct mainView: View {
                 case .addSongView:
                     AddSongView(navPath: $navPath, fileChecker: fileChecker)
                 case .sliceAudioView(let fileURL, let fileName, let fileLength):
-                    SliceAudioView(fileURL: fileURL, fileName: fileName, fileLength: fileLength, navPath: $navPath)
+                    SliceAudioView(fileURL: fileURL, fileName: fileName, fileLength: fileLength, GAP:GAP, navPath: $navPath)
                 }
     
             }

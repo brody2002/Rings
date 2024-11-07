@@ -131,5 +131,48 @@ class GlobalAudioPlayer: ObservableObject {
         }
     }
     
+    func playSnippet(url: URL, startCut: CGFloat, endCut: CGFloat, snippetTime: Binding<CGFloat>){
+        guard startCut.rounded() != endCut.rounded() else { return }
+        loadAudioPlayer(url: url)
+        audioProgressDict[url] = Float(startCut)
+        print("startCut: \(startCut), endCut: \(endCut)")
+        print("audioProgressDict: \(audioProgressDict[url]!)")
+        
+        do {
+            try AVAudioSession.sharedInstance().setCategory(AVAudioSession.Category.playback)
+            audioProgressDict[url] = Float(startCut)
+            audioPlayer!.currentTime = TimeInterval(startCut)
+            
+            
+            audioPlayer?.play()
+            songStartedByURL[url] = true
+            isPlayingDict[url] = true
+            
+            playbackTimer = Timer.scheduledTimer(withTimeInterval: 0.01, repeats: isPlayingDict[url]!) { _ in
+                if let currentTime = self.audioPlayer?.currentTime {
+                    snippetTime.wrappedValue = CGFloat(currentTime)
+                    self.audioProgressDict[url] = Float(currentTime)
+                    
+                    // Audio hits end of the endCut value
+                    if currentTime > TimeInterval(endCut){
+                        
+                        self.audioPlayer!.stop()
+                        self.stopTimer()
+                        
+                        
+                    }
+                }
+            }
+            
+        } catch {
+            print("failed the splice play")
+        }
+        
+        
+        
+    }
+    
+    
+    
 }
 

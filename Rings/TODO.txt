@@ -5,6 +5,16 @@ DONE 1. Format The ROWS
 DONE 2. Play Back issues upon moving into new view
 DONE 3. Make Knobs become aware of sound timeline
 DONE 3.5 Make Knobs have animation when being used
+DONE 5. Play from Cut portin of the song in the Slice Audio View
+
+
+
 4. Create the slice, overwrite or create new file
-5. Play from Cut portin of the song in the Slice Audio View
 6. Make Hold feature only apply to the row not the play button (OPTIONAL)
+
+7. Create timeline meter that tracks part of the audio being played.
+   Create method to tells users where they are in the song with text
+    * Black verical line with playback value
+    
+8. Stop Timer bug that causes everything to die
+

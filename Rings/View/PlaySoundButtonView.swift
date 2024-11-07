@@ -13,7 +13,7 @@ import UIKit
 
 
 struct PlaySoundButtonView: View {
-    @State private var buttonColor: Color = Color.black
+    @State private var buttonColor: Color = AppColors.third
     @State var fileURL: URL
     @State private var documentInteractionController: UIDocumentInteractionController?
     @State private var documentDelegate = DocumentInteractionControllerDelegate()

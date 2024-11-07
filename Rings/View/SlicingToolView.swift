@@ -25,12 +25,12 @@ struct Bar: View {
                         
                         
                         Rectangle()
-                            .fill(Color.black.opacity(0.2))
+                            .fill(AppColors.third.opacity(0.2))
                             .frame(height: rectangleHeight)
                   
                         
                         Rectangle()
-                            .fill(Color.black)
+                            .fill(AppColors.third)
                             .frame(
                                 width: (capsuleEndRatio - capsuleStartRatio) * totalWidth + capsuleWidth,
                                 height: rectangleHeight
@@ -61,7 +61,7 @@ struct Bar: View {
                             
                             Capsule()
                                 .frame(width: capsuleWidth, height: isHoldingEndButton ? 54 : 38)
-                                .offset(x: capsuleEndRatio * totalWidth - (capsuleWidth))
+                                .offset(x: capsuleEndRatio * totalWidth - (capsuleWidth * 1.31))
                                 
                                 .gesture(
                                     DragGesture()
@@ -69,7 +69,6 @@ struct Bar: View {
                                             let newRatio = max(0, min(1, value.location.x / totalWidth))
                                             if newRatio > capsuleStartRatio {
                                                 self.capsuleEndRatio = newRatio
-                                                print(newRatio)
                                                 self.capsuleEndRatio = newRatio
                                                 self.endCut = fileLength * capsuleEndRatio
                                             }
