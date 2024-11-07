@@ -15,20 +15,23 @@ struct SliceAudioView: View {
     let fileName: String
     let fileLength: CGFloat
     
+    // View Checks
     @State var isWaveFormShowing: Bool = false
     @State var isHoldingBack: Bool = false
     @State var isPlayingAudio: Bool = false
+    @State var cutAudioAlert: Bool = false
     
+    // Slider Values
     @State var capsuleStartRatio: CGFloat = 0.00
     @State var capsuleEndRatio: CGFloat = 1.0
     
+    // Audio Timeline
     @State var startCut: CGFloat = 0
     @State var endCut: CGFloat = 0
-    
     @State var snippetTime: CGFloat = 0
     
+    // App Objects
     @StateObject var GAP: GlobalAudioPlayer
-    
     @Binding var navPath: NavigationPath
 
 
@@ -70,21 +73,10 @@ struct SliceAudioView: View {
                                         
                                     }
                                 } : nil
-                            
-                            
-                        
-                        
-                        
                     )
                     .padding()
                     .padding(.bottom, metrics.size.height * 2/10)
-                        
-                
-                
-                
-                
-                    
-                    
+        
                 VStack {
                     HStack{
                         Spacer()
@@ -119,6 +111,7 @@ struct SliceAudioView: View {
                         ZStack(alignment: .leading){
                             if isPlayingAudio{
                                 Text("\(HandyFunctions.convertLengthSnippet(snippetTime))")
+                                    .font(Font.system(size: 20, design: .monospaced).weight(.light))
                             }
                         }
                         
@@ -131,25 +124,37 @@ struct SliceAudioView: View {
                         .frame(height: metrics.size.height * 5.75/10)
                     HStack{
                         Spacer()
-                        Text("Start: \(HandyFunctions.convertLengthSnippet(startCut))")
-                            .onChange(of: startCut){
-                                isPlayingAudio = false
-                                if GAP.audioPlayer?.isPlaying == true {
-                                    GAP.audioPlayer?.stop()
-                                }
-                                GAP.stopTimer()
-                                GAP.resetProgress(for: fileURL)
+                        HStack(spacing: 0) {
+                            Text("Start: ")
+                                .font(.system(size: 20, weight: .regular)) // Regular font for "End"
+                            
+                            Text("\(HandyFunctions.convertLengthSnippet(startCut))")
+                                .font(Font.system(size: 20, design: .monospaced).weight(.light)) // Monospaced font for the converted length
+                        }
+                        .onChange(of: startCut) {
+                            isPlayingAudio = false
+                            if GAP.audioPlayer?.isPlaying == true {
+                                GAP.audioPlayer?.stop()
                             }
+                            GAP.stopTimer()
+                            GAP.resetProgress(for: fileURL)
+                        }
                         Spacer()
-                        Text("End: \(HandyFunctions.convertLengthSnippet(endCut))")
-                            .onChange(of: endCut){
-                                isPlayingAudio = false
-                                if GAP.audioPlayer?.isPlaying == true {
-                                    GAP.audioPlayer?.stop()
-                                }
-                                GAP.stopTimer()
-                                GAP.resetProgress(for: fileURL)
+                        HStack(spacing: 0) {
+                            Text("End: ")
+                                .font(.system(size: 20, weight: .regular)) // Regular font for "End"
+                            
+                            Text("\(HandyFunctions.convertLengthSnippet(endCut))")
+                                .font(Font.system(size: 20, design: .monospaced).weight(.light)) // Monospaced font for the converted length
+                        }
+                        .onChange(of: endCut) {
+                            isPlayingAudio = false
+                            if GAP.audioPlayer?.isPlaying == true {
+                                GAP.audioPlayer?.stop()
                             }
+                            GAP.stopTimer()
+                            GAP.resetProgress(for: fileURL)
+                        }
                         Spacer()
                     }
                 
@@ -183,12 +188,24 @@ struct SliceAudioView: View {
                         }
                         Spacer()
                         ZStack{
-                            RoundedRectangle(cornerRadius: 4)
-                                    .stroke(lineWidth: 4)
-                                    .frame(width: 90, height: 90)
-                            Image(systemName: "scissors")
-                                .resizable()
-                                .frame(width: 50, height: 50)
+                            Button(
+                                action:{
+                                    cutAudioAlert = true
+                                },
+                                label:{
+                                    ZStack{
+                                        RoundedRectangle(cornerRadius: 4)
+                                            .stroke(lineWidth: 4)
+                                            .frame(width: 90, height: 90)
+                                            .foregroundStyle(AppColors.third)
+                                        Image(systemName: "scissors")
+                                            .resizable()
+                                            .frame(width: 50, height: 50)
+                                            .foregroundColor(AppColors.third)
+                                    }
+                                }
+                            )
+                           
                         }
                         Spacer()
                     }
@@ -198,6 +215,22 @@ struct SliceAudioView: View {
                 }
             }
         }.navigationBarBackButtonHidden(true)
+            .alert("Slice or Overwrite", isPresented: $cutAudioAlert) {
+                Button("Slice") {
+                    // Action for creating a new .mp3 file
+                    print("slice")
+                }
+                Button("Overwrite") {
+                    // Action for overwriting the existing file
+                    print("overwrite")
+                }
+                Button("Cancel", role: .cancel) {
+                    // Optional: Dismiss the alert without action
+                    print("cancel")
+                }
+            } message: {
+                Text("Choose to create a new .mp3 or to overwrite the existing file")
+            }
         
     }
 }
