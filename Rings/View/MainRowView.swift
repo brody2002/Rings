@@ -35,22 +35,29 @@ struct MainRowView: View {
             Color.white
             HStack{
                 Spacer()
-                    .frame(width: 15)
+                    .frame(width: 30)
                 PlaySoundButtonView(fileURL: fileURL, GAP:GAP, fileLength: fileLength)
                 Spacer()
-                    .frame(width:20)
-                VStack{
+                    .frame(width:50)
+                VStack(alignment: .leading) {
                     Text("\(fileName)")
-    
+                        .lineLimit(1)
+                        .truncationMode(.tail)
+                        .frame(maxWidth: .infinity, alignment: .leading)
                 }
+                .frame(width: 180, alignment: .leading)                .frame(width: 150)
                 Spacer()
-                Spacer()
-                HStack{
-                    Text("\(fileSize)")
-                        .font(.system(size: 10))
+                VStack{
+                    Spacer()
                     Text("\(convertLength(fileLength))")
                         .font(.system(size: 10))
+                    Spacer()
+                        .frame(height: 20)
+                    Text("\(fileSize)")
+                        .font(.system(size: 10))
+                    Spacer()
                 }
+                .frame(width: 100)
                 Spacer()
                     
             }
@@ -60,7 +67,9 @@ struct MainRowView: View {
             //Slice Audio View
             print("ROW TAP")
             navPath.append(Destination.sliceAudioView(fileURL: fileURL, fileName: fileName, fileLength: fileLength))
-            GAP.stopTimer()
+            GAP.audioPlayer!.stop()
+            GAP.resetProgress(for: fileURL)
+            GAP.resetProgressForAllOtherFiles(in: fileURL.deletingLastPathComponent(), url: fileURL)
             
         }
         .onLongPressGesture(minimumDuration: 0.05, pressing: { pressing in

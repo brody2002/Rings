@@ -96,6 +96,7 @@ class GlobalAudioPlayer: ObservableObject {
     }
     
     func stopTimer() {
+        print("stoping timer? ")
         playbackTimer?.invalidate()
         playbackTimer = nil
     }
@@ -130,15 +131,5 @@ class GlobalAudioPlayer: ObservableObject {
         }
     }
     
-    func killGAP(){
-        // NOT WORKING :(
-        if currentURL != nil{
-            audioPlayer?.pause()
-            isPlayingDict[currentURL!] = false
-            self.prevURL = currentURL!
-            stopTimer()
-            resetProgress(for: currentURL!)
-        }
-    }
 }
 

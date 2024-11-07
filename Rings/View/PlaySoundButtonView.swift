@@ -60,8 +60,15 @@ struct PlaySoundButtonView: View {
                                     .foregroundStyle(buttonColor)
             }
             .frame(width: 40, height: 40)
+            
             .onTapGesture {
-                if GAP.isPlayingDict[fileURL]! {
+
+                if GAP.isPlayingDict[fileURL] == nil{
+                    // fileURL isnt in dictionary from moving files in the directory
+                    GAP.isPlayingDict[fileURL] = false
+                    GAP.play(url: fileURL)
+                }
+                else if GAP.isPlayingDict[fileURL] == true {
                     GAP.pause(url: fileURL)
                 } else {
                     GAP.play(url: fileURL)

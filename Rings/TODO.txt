@@ -1,0 +1,8 @@
+
+TODO:
+DONE 0. Fix File checker viewing files. (When I add something new into the folder the app crashes)
+DONE 1. Format The ROWS
+DONE 2. Play Back issues upon moving into new view
+3. Make Knobs become aware of sound timeline
+4. Create the slice, overwrite or create new file
+5. Make Hold feature only apply to the row not the play button (OPTIONAL)
