@@ -21,6 +21,8 @@ struct SliceAudioView: View {
     @State var isHoldingBack: Bool = false
     @State var isPlayingAudio: Bool = false
     @State var cutAudioAlert: Bool = false
+    @State var showBlackBar: Bool = false
+    
     
     // Slider Values
     @State var capsuleStartRatio: CGFloat = 0.00
@@ -60,7 +62,7 @@ struct SliceAudioView: View {
                                 
                                 
                                 
-                                if isPlayingAudio{
+                                if showBlackBar{
                                     VStack{
                                         Rectangle()
                                             .fill(AppColors.third)
@@ -92,6 +94,7 @@ struct SliceAudioView: View {
                             }, perform: {
                                 if isHoldingBack{
                                     // remove from navpath
+                                    
                                     if GAP.audioPlayer?.isPlaying == true {
                                         GAP.audioPlayer?.stop()
                                     }
@@ -135,7 +138,10 @@ struct SliceAudioView: View {
                                 .font(Font.system(size: 20, design: .monospaced).weight(.light)) // Monospaced font for the converted length
                         }
                         .onChange(of: startCut) {
-                            isPlayingAudio = false
+                            showBlackBar = false
+                            withAnimation(.spring(response: 0.3, dampingFraction: 0.5)){
+                                isPlayingAudio = false
+                            }
                             if GAP.audioPlayer?.isPlaying == true {
                                 GAP.audioPlayer?.stop()
                             }
@@ -151,7 +157,10 @@ struct SliceAudioView: View {
                                 .font(Font.system(size: 20, design: .monospaced).weight(.light)) // Monospaced font for the converted length
                         }
                         .onChange(of: endCut) {
-                            isPlayingAudio = false
+                            showBlackBar = false
+                            withAnimation(.spring(response: 0.3, dampingFraction: 0.5)){
+                                isPlayingAudio = false
+                            }
                             if GAP.audioPlayer?.isPlaying == true {
                                 GAP.audioPlayer?.stop()
                             }
@@ -167,48 +176,58 @@ struct SliceAudioView: View {
                     HStack{
                         Spacer()
                         ZStack {
-                            Button(action:{
-                                print("tapped")
-                                GAP.playSnippet(url: fileURL, startCut: startCut, endCut: endCut, snippetTime: $snippetTime)
-                                DispatchQueue.main.asyncAfter(deadline: .now() + 0.05){
-                                    isPlayingAudio = true
+                            
+                            ZStack{
+                                RoundedRectangle(cornerRadius: 4)
+                                    .stroke(lineWidth: 4)
+                                    .frame(width: 90, height: 90)
+                                    .foregroundColor(AppColors.third)
+                                Image(systemName: isPlayingAudio ? "pause.fill" : "play.fill")
+                                    .resizable()
+                                    .frame(width: 50, height: 50)
+                                    .foregroundColor(AppColors.third)
+                            }
+                            .onTapGesture {
+                                if !isPlayingAudio {
+                                    GAP.playSnippet(url: fileURL, startCut: startCut, endCut: endCut, snippetTime: $snippetTime)
+                                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.05){
+                                        showBlackBar = true
+                                        withAnimation(.spring(response: 0.3, dampingFraction: 0.5)){
+                                            isPlayingAudio = true
+                                        }
+                                    }
                                 }
-                                
-                            },
-                                   label:{
-                                ZStack{
-                                    RoundedRectangle(cornerRadius: 4)
-                                        .stroke(lineWidth: 4)
-                                        .frame(width: 90, height: 90)
-                                        .foregroundColor(AppColors.third)
-                                    Image(systemName: "play.fill")
-                                        .resizable()
-                                        .frame(width: 50, height: 50)
-                                        .foregroundColor(AppColors.third)
+                                else{
+                                    // pause state
+                                    
+                                    GAP.audioPlayer?.stop()
+                                    GAP.stopTimer()
+                                    GAP.resetProgress(for: fileURL)
+                                    showBlackBar = false
+                                    withAnimation(.spring(response: 0.3, dampingFraction: 0.5)){
+                                        isPlayingAudio = false
+                                    }
                                 }
                             }
-                            )
+                            
+                            
                         }
                         Spacer()
                         ZStack{
-                            Button(
-                                action:{
-                                    cutAudioAlert = true
-                                },
-                                label:{
-                                    ZStack{
-                                        RoundedRectangle(cornerRadius: 4)
-                                            .stroke(lineWidth: 4)
-                                            .frame(width: 90, height: 90)
-                                            .foregroundStyle(AppColors.third)
-                                        Image(systemName: "scissors")
-                                            .resizable()
-                                            .frame(width: 50, height: 50)
-                                            .foregroundColor(AppColors.third)
-                                    }
-                                }
-                            )
                             
+                            ZStack{
+                                RoundedRectangle(cornerRadius: 4)
+                                    .stroke(lineWidth: 4)
+                                    .frame(width: 90, height: 90)
+                                    .foregroundStyle(AppColors.third)
+                                Image(systemName: "scissors")
+                                    .resizable()
+                                    .frame(width: 50, height: 50)
+                                    .foregroundColor(AppColors.third)
+                            }
+                            .onTapGesture {
+                                cutAudioAlert = true
+                            }
                         }
                         Spacer()
                     }

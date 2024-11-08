@@ -40,6 +40,8 @@ struct mainView: View {
                         List {
                             ForEach(fileChecker.fileList, id: \.self) { file in
                                 MainRowView(fileName: file.name, fileSize: file.size.toFileSizeString(), fileLength: file.length ?? 0.0, fileURL: file.fileURL, GAP: GAP, navPath: $navPath)
+                                    .listRowInsets(EdgeInsets(top: 10, leading: 0, bottom: 10, trailing: 0))
+                                
                                     
                             }
                             .onDelete { indexSet in
@@ -50,6 +52,7 @@ struct mainView: View {
                             }
                             
                         }
+                        
                     }
                     .frame(maxWidth: .infinity, maxHeight: UIScreen.main.bounds.height * 0.7)
                     .scrollContentBackground(.hidden)

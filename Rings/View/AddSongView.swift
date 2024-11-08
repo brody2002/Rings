@@ -32,7 +32,6 @@ struct AddSongView: View {
         
     }
     
-    private let invalidCharacters = CharacterSet(charactersIn: "\\/:*?\"<>|")
     
     private var filledOut: Bool {
         if !songName.isEmpty && URL(string: songURL) != nil{
@@ -60,10 +59,14 @@ struct AddSongView: View {
 
     
     func validFileName(_ newValue: String){
+        let invalidCharacters = CharacterSet(charactersIn: "\\/:*?\"<>|").union(.newlines).union(.controlCharacters).subtracting(.whitespaces)
+
         let filtered = newValue
             .components(separatedBy: invalidCharacters).joined()
-            .trimmingCharacters(in: .whitespacesAndNewlines)
-            .trimmingCharacters(in: .init(charactersIn: "."))
+            .trimmingCharacters(in: .newlines)
+            .trimmingCharacters(in: .init(charactersIn: ".\t\r"))
+
+        print("'\(filtered)'")
 
         
         let finalValue = String(filtered.prefix(255))
@@ -109,7 +112,7 @@ struct AddSongView: View {
                                             server.youtubeLink = songURL
                                             server.sendYouTubeLink(inputURL: fileChecker.folderPath){ fileURL in
                                             if let fileURL = fileURL {
-                                                print("M4A saved to: \(fileURL.path)")
+                                                print("MP3 saved to: \(fileURL.path)")
                                                 
                                                 
                                                 //Dismiss the Navigation Path back to the root view
@@ -122,7 +125,7 @@ struct AddSongView: View {
                                                 
                                             } else {
                                                 
-                                                // Show error for failed m4a download
+                                                // Show error for failed mp3 download
                                                 showConnectError.toggle()
                                                 setErrorMessage(errorMsg: "Failed to Connect to Server")
                                                 

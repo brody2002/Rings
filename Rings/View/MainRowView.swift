@@ -23,29 +23,30 @@ struct MainRowView: View {
             Color.white
             HStack{
                 Spacer()
-                    .frame(width: 30)
+                    .frame(width: 50)
                 PlaySoundButtonView(fileURL: fileURL, GAP:GAP, fileLength: fileLength)
                 Spacer()
-                    .frame(width:50)
+                    .frame(width:30)
                 VStack(alignment: .leading) {
                     Text("\(fileName)")
                         .lineLimit(1)
                         .truncationMode(.tail)
                         .frame(maxWidth: .infinity, alignment: .leading)
+                        .font(.system(size: 20))
+                        .bold()
+                    Spacer()
+                        .frame(height: 10)
+                    HStack{
+                        Text(HandyFunctions.convertLength(fileLength))
+                            .font(.system(size: 10))
+                            .foregroundColor(Color.gray)
+                        Text(fileSize)
+                            .font(.system(size: 10))
+                            .foregroundColor(Color.gray)
+                        Spacer()
+                    }
                 }
-                .frame(width: 180, alignment: .leading)                .frame(width: 150)
-                Spacer()
-                VStack{
-                    Spacer()
-                    Text("\(HandyFunctions.convertLength(fileLength))")
-                        .font(.system(size: 10))
-                    Spacer()
-                        .frame(height: 20)
-                    Text("\(fileSize)")
-                        .font(.system(size: 10))
-                    Spacer()
-                }
-                .frame(width: 100)
+                .frame(width: 300)
                 Spacer()
                     
             }
@@ -74,7 +75,7 @@ struct MainRowView: View {
     
     ZStack{
         Color.green.ignoresSafeArea()
-        MainRowView(fileName: "505.m4a", fileSize: "2.7Mb", fileLength: 221.0, fileURL: URL(fileURLWithPath: ""), GAP: GlobalAudioPlayer(),navPath: .constant(NavigationPath()))
+        MainRowView(fileName: "505 CoastContra.m4a", fileSize: "2.7Mb", fileLength: 221.0, fileURL: URL(fileURLWithPath: ""), GAP: GlobalAudioPlayer(),navPath: .constant(NavigationPath()))
     }
    
 }
