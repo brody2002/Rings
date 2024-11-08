@@ -4,9 +4,10 @@
 //
 //  Created by Brody on 11/4/24.
 //
-
+import Foundation
 import AVFoundation
 import SwiftUI
+
 
 
 struct SliceAudioView: View {
@@ -33,8 +34,8 @@ struct SliceAudioView: View {
     // App Objects
     @StateObject var GAP: GlobalAudioPlayer
     @Binding var navPath: NavigationPath
-
-
+    
+    
     var body: some View {
         GeometryReader{ metrics in
             ZStack {
@@ -42,41 +43,42 @@ struct SliceAudioView: View {
                 AudioAssetTimelineBackground(audioUrl: fileURL, isWaveFormShowing: $isWaveFormShowing)
                     .overlay(
                         
-                            isWaveFormShowing ? ZStack(alignment: .leading) {
-                                    // Orange rectangle that reflects capsuleStartRatio and capsuleEndRatio
-                                    GeometryReader { overlayMetrics in
-                                        let totalWidth = overlayMetrics.size.width
-                                        let rectStart = capsuleStartRatio * totalWidth
-                                        let rectWidth = (capsuleEndRatio - capsuleStartRatio) * totalWidth
-                                        
+                        isWaveFormShowing ? ZStack(alignment: .leading) {
+                            // Orange rectangle that reflects capsuleStartRatio and capsuleEndRatio
+                            GeometryReader { overlayMetrics in
+                                let totalWidth = overlayMetrics.size.width
+                                let rectStart = capsuleStartRatio * totalWidth
+                                let rectWidth = (capsuleEndRatio - capsuleStartRatio) * totalWidth
+                                
+                                Rectangle()
+                                    .fill(AppColors.slice.opacity(0.7))
+                                    .frame(width: rectWidth)
+                                    .cornerRadius(20)
+                                    .offset(x: rectStart)
+                                    .animation(.easeInOut, value: capsuleStartRatio)
+                                    .animation(.easeInOut, value: capsuleEndRatio)
+                                
+                                
+                                
+                                if isPlayingAudio{
+                                    VStack{
                                         Rectangle()
-                                            .fill(AppColors.slice.opacity(0.7))
-                                            .frame(width: rectWidth)
-                                            .cornerRadius(20)
-                                            .offset(x: rectStart)
-                                            .animation(.easeInOut, value: capsuleStartRatio)
-                                            .animation(.easeInOut, value: capsuleEndRatio)
-                                        
-                                        
-                                        
-                                        if isPlayingAudio{
-                                            VStack{
-                                                Rectangle()
-                                                    .fill(AppColors.third)
-                                                    
-                                            }
-                                            .frame(width: 2, height: overlayMetrics.size.height)
-                                            .scaleEffect(y: 0.92, anchor: .center)
-                                            // need length of the song to convert to the ratios values.
-                                            .offset(x: snippetTime / fileLength * totalWidth)
-                                        }
+                                            .fill(AppColors.third)
                                         
                                     }
-                                } : nil
+                                    .frame(width: 2, height: overlayMetrics.size.height)
+                                    .scaleEffect(y: 0.92, anchor: .center)
+                                    
+                                    // need length of the song to convert to the ratios values.
+                                    .offset(x: snippetTime / fileLength * totalWidth)
+                                }
+                                
+                            }
+                        } : nil
                     )
                     .padding()
                     .padding(.bottom, metrics.size.height * 2/10)
-        
+                
                 VStack {
                     HStack{
                         Spacer()
@@ -90,15 +92,16 @@ struct SliceAudioView: View {
                             }, perform: {
                                 if isHoldingBack{
                                     // remove from navpath
-                                    navPath.removeLast()
                                     if GAP.audioPlayer?.isPlaying == true {
                                         GAP.audioPlayer?.stop()
                                     }
                                     GAP.resetProgress(for: fileURL)
+                                    navPath.removeLast()
+                                    
                                 }
                             })
                         Spacer()
-                            
+                        
                         Text("Slice Audio")
                             .font(.system(size: 26))
                             .bold()
@@ -118,7 +121,7 @@ struct SliceAudioView: View {
                         
                     }
                     .frame(width: 100,height: 20)
-                   
+                    
                     
                     Spacer()
                         .frame(height: metrics.size.height * 5.75/10)
@@ -157,7 +160,7 @@ struct SliceAudioView: View {
                         }
                         Spacer()
                     }
-                
+                    
                     CustomSlider(fileLength: fileLength, capsuleStartRatio: $capsuleStartRatio, capsuleEndRatio: $capsuleEndRatio, startCut: $startCut, endCut: $endCut)
                         .padding()
                     Spacer()
@@ -172,18 +175,18 @@ struct SliceAudioView: View {
                                 }
                                 
                             },
-                                label:{
-                                    ZStack{
-                                        RoundedRectangle(cornerRadius: 4)
-                                            .stroke(lineWidth: 4)
-                                            .frame(width: 90, height: 90)
-                                            .foregroundColor(AppColors.third)
-                                        Image(systemName: "play.fill")
-                                            .resizable()
-                                            .frame(width: 50, height: 50)
-                                            .foregroundColor(AppColors.third)
-                                        }
-                                    }
+                                   label:{
+                                ZStack{
+                                    RoundedRectangle(cornerRadius: 4)
+                                        .stroke(lineWidth: 4)
+                                        .frame(width: 90, height: 90)
+                                        .foregroundColor(AppColors.third)
+                                    Image(systemName: "play.fill")
+                                        .resizable()
+                                        .frame(width: 50, height: 50)
+                                        .foregroundColor(AppColors.third)
+                                }
+                            }
                             )
                         }
                         Spacer()
@@ -205,13 +208,13 @@ struct SliceAudioView: View {
                                     }
                                 }
                             )
-                           
+                            
                         }
                         Spacer()
                     }
                     Spacer()
                     Spacer()
-                        
+                    
                 }
             }
         }.navigationBarBackButtonHidden(true)
@@ -219,10 +222,16 @@ struct SliceAudioView: View {
                 Button("Slice") {
                     // Action for creating a new .mp3 file
                     print("slice")
+                    
+                    //
+                    Task {
+                        await overWriteAudio(fileURL: fileURL, startCut: startCut, endCut: endCut, isOverWriting: false)
+                    }
                 }
                 Button("Overwrite") {
                     // Action for overwriting the existing file
                     print("overwrite")
+                    
                 }
                 Button("Cancel", role: .cancel) {
                     // Optional: Dismiss the alert without action
@@ -231,16 +240,96 @@ struct SliceAudioView: View {
             } message: {
                 Text("Choose to create a new .mp3 or to overwrite the existing file")
             }
-        
     }
+    
+    func overWriteAudio(fileURL: URL, startCut: CGFloat, endCut: CGFloat, isOverWriting: Bool, fileManager: FileManager = .default) async {
+        let asset = AVURLAsset(url: fileURL)
+        var outputURL: URL
+
+        // Define start and end time in CMTime
+        let startTime = CMTime(seconds: Double(startCut), preferredTimescale: asset.duration.timescale)
+        let endTime = CMTime(seconds: Double(endCut), preferredTimescale: asset.duration.timescale)
+        let timeRange = CMTimeRange(start: startTime, end: endTime)
+
+        let directory = fileURL.deletingLastPathComponent()
+        var baseName = fileURL.deletingPathExtension().lastPathComponent
+        let fileExtension = fileURL.pathExtension
+
+        if isOverWriting {
+            outputURL = fileURL
+        } else {
+            // Check if the base name already includes a "_sliceX" suffix
+            if let range = baseName.range(of: "_slice\\d+$", options: .regularExpression) {
+                baseName.removeSubrange(range)
+            }
+
+            // Find a unique suffix for the output file
+            var suffix = 1
+            repeat {
+                let newFileName = "\(baseName)_slice\(suffix).\(fileExtension)"
+                outputURL = directory.appendingPathComponent(newFileName)
+
+                // If we find a gap (e.g., _slice1 missing), stop checking
+                if !fileManager.fileExists(atPath: outputURL.path) {
+                    break
+                }
+                suffix += 1
+            } while true
+        }
+
+        // Remove the existing file if it exists
+        if fileManager.fileExists(atPath: outputURL.path) {
+            do {
+                try fileManager.removeItem(at: outputURL)
+            } catch {
+                print("Error removing existing file: \(error.localizedDescription)")
+                return
+            }
+        }
+
+        // Prepare export session
+        guard let exportSession = AVAssetExportSession(asset: asset, presetName: AVAssetExportPresetAppleM4A) else {
+            print("Failed to create export session.")
+            return
+        }
+
+        exportSession.outputURL = outputURL
+        exportSession.outputFileType = .m4a
+        exportSession.timeRange = timeRange
+
+        do {
+            try await exportSession.export(to: outputURL, as: .m4a)
+            print("Audio successfully sliced and saved at \(outputURL)")
+
+            // Clean up temporary file if applicable
+            if fileURL.path.contains(NSTemporaryDirectory()) {
+                try? fileManager.removeItem(at: fileURL)
+                print("Temporary file deleted: \(fileURL)")
+            }
+        } catch {
+            print("Export failed: \(error.localizedDescription)")
+        }
+    }
+
+
+
+
+
+        
 }
 
+
+extension FileManager {
+    func temporaryFileURL(fileName: String = UUID().uuidString) -> URL? {
+        return URL(fileURLWithPath: NSTemporaryDirectory(), isDirectory: true).appendingPathComponent(fileName)
+    }
+}
 
 #Preview {
     @Previewable @State var navPath = NavigationPath()
     @Previewable @StateObject var GAP = GlobalAudioPlayer()
-    if let testURL = Bundle.main.url(forResource: "Kendrick Lamar - Not Like Us", withExtension: "mp3") {
-        SliceAudioView(fileURL: testURL, fileName: "NOT LIKE US", fileLength: 60.0, GAP: GAP, navPath: $navPath)
+    if let testURL = Bundle.main.url(forResource: "505", withExtension: "m4a") {
+        SliceAudioView(fileURL: testURL, fileName: "505", fileLength: 60.0, GAP: GAP, navPath: $navPath)
             .onAppear{
                 print("TEST URL: \n\(testURL)")
             }

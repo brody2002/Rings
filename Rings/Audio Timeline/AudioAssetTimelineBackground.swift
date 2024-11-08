@@ -107,7 +107,7 @@ struct AudioAssetTimelineBackground: View {
 }
 
 #Preview {
-    let mainURL = Bundle.main.url(forResource: "m.A.A.d city", withExtension: "mp3")
+    let mainURL = Bundle.main.url(forResource: "505", withExtension: "mp3")
     AudioAssetTimelineBackground(audioUrl: mainURL!, isWaveFormShowing: .constant(false))
 }
 

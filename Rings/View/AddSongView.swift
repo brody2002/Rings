@@ -109,7 +109,7 @@ struct AddSongView: View {
                                             server.youtubeLink = songURL
                                             server.sendYouTubeLink(inputURL: fileChecker.folderPath){ fileURL in
                                             if let fileURL = fileURL {
-                                                print("MP3 saved to: \(fileURL.path)")
+                                                print("M4A saved to: \(fileURL.path)")
                                                 
                                                 
                                                 //Dismiss the Navigation Path back to the root view
@@ -122,7 +122,7 @@ struct AddSongView: View {
                                                 
                                             } else {
                                                 
-                                                // Show error for failed mp3 download
+                                                // Show error for failed m4a download
                                                 showConnectError.toggle()
                                                 setErrorMessage(errorMsg: "Failed to Connect to Server")
                                                 

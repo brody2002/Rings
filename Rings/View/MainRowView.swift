@@ -74,7 +74,7 @@ struct MainRowView: View {
     
     ZStack{
         Color.green.ignoresSafeArea()
-        MainRowView(fileName: "OnePieceOP.mp3", fileSize: "8Mb", fileLength: 221.0, fileURL: URL(fileURLWithPath: ""), GAP: GlobalAudioPlayer(),navPath: .constant(NavigationPath()))
+        MainRowView(fileName: "505.m4a", fileSize: "2.7Mb", fileLength: 221.0, fileURL: URL(fileURLWithPath: ""), GAP: GlobalAudioPlayer(),navPath: .constant(NavigationPath()))
     }
    
 }

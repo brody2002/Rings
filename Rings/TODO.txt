@@ -1,15 +1,15 @@
-Nov 7th
+Nov 8th
 
-Done 7. Make the milliseconds text view stay in play as numbers are changing.
-Done 6. Make Hold feature only apply to the row not the play button (OPTIONAL)
 
 
 TODO:
 4. Create the slice, overwrite or create new file, alerts etc...
+10. Fix the Layout of the rows maybe the UI in general ...
+11. Garage band file creation
+12. Make little slide tutorial on how to navigate through garage band after the garageband file has been made
+13. Add Pause button
 
 
-
-
-    
-
+MUST DO NOW:
+COnvert all mp3 implementations to m4a. 
 

@@ -15,7 +15,7 @@ class ServerCommunicator: NSObject, UIDocumentPickerDelegate, ObservableObject{
     var fileName: String
     var youtubeLink: String
     var isLoading: Bool = false
-    private let serverLink: String = "http://192.168.1.223:5002/convert"
+    private let serverLink: String = "http://192.168.0.210:5002/convert"
     
     init(fileName: String = "", youtubeLink: String = "") {
         self.fileName = fileName
@@ -75,8 +75,8 @@ class ServerCommunicator: NSObject, UIDocumentPickerDelegate, ObservableObject{
                 let tempDirectoryURL = FileManager.default.temporaryDirectory
                 
                 //URL INPUT HERE
-                let fileURL = tempDirectoryURL.appendingPathComponent("\(self.fileName).mp3")
-                let outputURL = inputURL.appendingPathComponent("\(self.fileName).mp3")
+                let fileURL = tempDirectoryURL.appendingPathComponent("\(self.fileName).m4a")
+                let outputURL = inputURL.appendingPathComponent("\(self.fileName).m4a")
                 print("fileURL: \(fileURL)")
                 print("outputURL: \(outputURL)")
                 

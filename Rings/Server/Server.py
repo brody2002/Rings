@@ -3,13 +3,13 @@ import os
 import yt_dlp
 
 from flask import Flask, request, send_file, jsonify
-from YoutubeMP3Converter import YouTubeMP3
+from YoutubeM4AConverter import YouTubeM4A
 
 
 app = Flask(__name__)
 
 @app.route('/convert', methods=['POST'])
-def convert_to_mp3():
+def convert_to_m4a():
     print("called on convert branch of url")
     try:
         data = request.get_json()
@@ -20,11 +20,11 @@ def convert_to_mp3():
             return jsonify({"error": "No URL provided"}), 400
 
         # Call YouTubeMP3 function to download and convert
-        filename = YouTubeMP3(inputURL=video_url)
+        filename = YouTubeM4A(inputURL=video_url)
         
         # Check if YouTubeMP3 returned a valid filename
         if not filename:
-            return jsonify({"error": "Failed to retrieve filename from YouTubeMP3 function"}), 500
+            return jsonify({"error": "Failed to retrieve filename from YouTubeM4A function"}), 500
         
         # Check if file was successfully created
         if not os.path.exists(filename):

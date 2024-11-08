@@ -63,7 +63,7 @@ class FilesChecker: ObservableObject {
                 
                 // Check if the file is a media file and get its duration
                 var fileLength: TimeInterval? = nil
-                if fileURL.pathExtension.lowercased() == "mp3" || fileURL.pathExtension.lowercased() == "mp4" {
+                if fileURL.pathExtension.lowercased() == "m4a" || fileURL.pathExtension.lowercased() == "m4a" {
                     let asset = AVURLAsset(url: fileURL)
                     fileLength = asset.duration.seconds
                 }
