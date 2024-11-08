@@ -33,7 +33,7 @@ struct PlaySoundButtonView: View {
             ZStack {
                 Circle()
                     .stroke(lineWidth: 3)
-                    .foregroundStyle(buttonColor)
+                    .foregroundStyle(AppColors.backgroundColor)
                     .frame(width: 40, height: 40)
                 
                 
@@ -49,7 +49,7 @@ struct PlaySoundButtonView: View {
                 
                 Circle()
                     .trim(from: 0.0, to: CGFloat(GAP.audioProgressDict[fileURL] ?? 0.0) / fileLength)
-                    .stroke(style: StrokeStyle(lineWidth: 2.5, lineCap: .round, lineJoin: .round))
+                    .stroke(style: StrokeStyle(lineWidth: 4, lineCap: .round, lineJoin: .round))
                     .foregroundStyle(AppColors.secondary)
 //                    .onChange(of: GAP.audioProgressDict[fileURL]) { value in
 //                        print("\(fileURL.lastPathComponent) is being changed")

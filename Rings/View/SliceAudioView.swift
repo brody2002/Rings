@@ -231,6 +231,9 @@ struct SliceAudioView: View {
                 Button("Overwrite") {
                     // Action for overwriting the existing file
                     print("overwrite")
+                    Task {
+                        await overWriteAudio(fileURL: fileURL, startCut: startCut, endCut: endCut, isOverWriting: true)
+                    }
                     
                 }
                 Button("Cancel", role: .cancel) {
