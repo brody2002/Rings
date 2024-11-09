@@ -1,14 +1,17 @@
-Nov 8th
+Nov 9th
 Done:
-4.  Create the slice, overwrite or create new file, alerts etc...
-13. Add Pause button
-14. All Mp3 implementation is now M4A
+
+
+15. Rename Files Feature
+16. Rows are wider than their container
+17. Fixed Server
 
 
 
 TODO:
-10. Fix the Layout of the rows maybe the UI in general ...
+
 11. Garage band file creation
 12. Make little slide tutorial on how to navigate through garage band after the garageband file has been made
-15. Rename Files Feature
+18. Sort List alphabetically
+
 

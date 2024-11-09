@@ -71,7 +71,7 @@ class FilesChecker: ObservableObject {
                 
                 let fileSize = attributes.fileSize ?? 0
                 let fileDetails = FileDetails(name: fileName, size: Int64(fileSize), length: fileLength, fileURL: fileURL)
-//                print("\n\nFileDetails: \(fileDetails)\n\n")
+                print("\n\nFileDetails: \(fileDetails)\n\n")
                 fileDetailsList.append(fileDetails)
             }
             
@@ -86,6 +86,27 @@ class FilesChecker: ObservableObject {
         print("updating FILES")
         fileList = findFiles() // Update fileList with the current contents of the folder
     }
+    
+    func renameFile(currentFileName: String, newFileName: String) {
+        let currentFileURL = folderPath.appendingPathComponent(currentFileName)
+        let newFileURL = folderPath.appendingPathComponent("\(newFileName).m4a")
+        let fileManager = FileManager.default
+
+        // Ensure the new file name doesn't already exist
+        guard !fileManager.fileExists(atPath: newFileURL.path) else {
+            print("A file with the name \(newFileName) already exists.")
+            return
+        }
+
+        do {
+            try fileManager.moveItem(at: currentFileURL, to: newFileURL)
+            print("Renamed file from \(currentFileName) to \(newFileName)")
+            updateFileList() // Refresh the file list after renaming
+        } catch {
+            print("Error renaming file \(currentFileName) to \(newFileName): \(error)")
+        }
+    }
+
     
     private func startMonitoringFolder() {
         stopMonitoringFolder() // Stop any existing monitor

@@ -154,6 +154,8 @@ struct AddSongView: View {
                             LoadingView(color: AppColors.secondary)
                         }
                     }
+                    .padding(.bottom ,80)
+                    .padding(.leading, 5)
                     
                 }
                 

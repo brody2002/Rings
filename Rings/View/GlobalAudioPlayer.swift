@@ -89,7 +89,18 @@ class GlobalAudioPlayer: ObservableObject {
     func startTimer(url: URL) {
         playbackTimer = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: isPlayingDict[url]!) { _ in
             if let currentTime = self.audioPlayer?.currentTime {
-                self.audioProgressDict[url] = Float(currentTime)
+                withAnimation{
+                    self.audioProgressDict[url] = Float(currentTime)
+                }
+                // iDK if this is based off of setup or actually playing a song
+                if self.audioPlayer?.isPlaying == false{
+                    self.stopTimer()
+                    withAnimation{
+                        self.audioProgressDict[url] = 0
+                        self.isPlayingDict[url] = false
+                    }
+                    self.resetProgress(for: url)
+                }
 
             }
         }

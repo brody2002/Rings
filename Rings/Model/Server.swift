@@ -15,7 +15,7 @@ class ServerCommunicator: NSObject, UIDocumentPickerDelegate, ObservableObject{
     var fileName: String
     var youtubeLink: String
     var isLoading: Bool = false
-    private let serverLink: String = "http://192.168.0.210:5002/convert"
+    private let serverLink: String = "http://10.0.0.89:5002/convert"
     
     init(fileName: String = "", youtubeLink: String = "") {
         self.fileName = fileName
@@ -59,8 +59,19 @@ class ServerCommunicator: NSObject, UIDocumentPickerDelegate, ObservableObject{
                 return
             }
             
-            guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 else {
-                print("Server returned an error")
+            guard let httpResponse = response as? HTTPURLResponse else {
+                print("Invalid response or not an HTTP response")
+                self.isLoading = false
+                completion(nil)
+                return
+            }
+
+            if httpResponse.statusCode == 200 {
+                // Proceed if status code is 200 (OK)
+                print("Success with status code: \(httpResponse.statusCode)")
+            } else {
+                // Handle non-200 status codes
+                print("Server returned an error with status code: \(httpResponse.statusCode)")
                 self.isLoading = false
                 completion(nil)
                 return

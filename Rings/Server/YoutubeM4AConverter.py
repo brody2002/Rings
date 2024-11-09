@@ -1,18 +1,17 @@
 import yt_dlp
 import os
-
-
-# Note: Script won't work unless you have ffmpeg and ffprobe installed on your system
+import urllib3
 
 
 def YouTubeM4A(inputURL: str):
+    # Disable urllib3 warnings
+    urllib3.disable_warnings()
+
     # Define the destination directory
     dest = os.path.expanduser("~/Desktop/BrodyCode/IosApp/Rings/Rings/Server/MusicFiles")
-    
-    # Ensure the destination directory exists
-    os.makedirs(dest, exist_ok=True)
-    
-    # Configure options for yt-dlp
+    os.makedirs(dest, exist_ok=True)  # Ensure the directory exists
+
+    # Configure yt-dlp options
     ydl_opts = {
         'format': 'bestaudio/best',
         'outtmpl': os.path.join(dest, '%(title)s.%(ext)s'),
@@ -22,25 +21,23 @@ def YouTubeM4A(inputURL: str):
             'preferredquality': '256'
         }]
     }
-    
-    # Download the audio
-    with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-        info_dict = ydl.extract_info(inputURL, download=True)
-        title = info_dict.get('title', None)  # Get the title of the video
 
-    # Construct the full file path based on the title
-    filename = f"{title}.m4a"
-    file_path = os.path.join(dest, filename)
-    
-    # Check if file exists and return the path
-    if os.path.exists(file_path):
-        return file_path
-    else:
+    try:
+        # Download the audio and extract metadata
+        with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+            info_dict = ydl.extract_info(inputURL, download=True)
+            file_path = ydl.prepare_filename(info_dict).replace('.webm', '.m4a')
+            print("File path generated:", file_path)
+
+        # Verify the file exists
+        if os.path.exists(file_path):
+            print("File successfully created:", file_path)
+            return file_path
+        else:
+            print("File does not exist after processing.")
+            return None
+
+    except Exception as e:
+        print(f"Error occurred: {e}")
         return None
 
-
-
-
-
-
-    

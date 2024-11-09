@@ -39,7 +39,7 @@ struct mainView: View {
                     Form {
                         List {
                             ForEach(fileChecker.fileList, id: \.self) { file in
-                                MainRowView(fileName: file.name, fileSize: file.size.toFileSizeString(), fileLength: file.length ?? 0.0, fileURL: file.fileURL, GAP: GAP, navPath: $navPath)
+                                MainRowView(fileName: file.name, fileSize: file.size.toFileSizeString(), fileLength: file.length ?? 0.0, fileURL: file.fileURL, GAP: GAP, navPath: $navPath, fileChecker: fileChecker)
                                     .listRowInsets(EdgeInsets(top: 10, leading: 0, bottom: 10, trailing: 0))
                                 
                                     
