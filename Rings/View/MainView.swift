@@ -108,10 +108,11 @@ struct mainView: View {
                 
                 fileChecker.renameFile(currentFileName: fileDirectoryURL!.lastPathComponent, newFileName: newFileName)
                 GAP.resetProgress(for: fileDirectoryURL!.appendingPathComponent(newFileName))
+                newFileName = ""
                
                 
             })
-            Button("Cancel", role: .cancel) { }
+            Button("Cancel", role: .cancel) {newFileName = ""}
         } message: {
             Text("Please enter a new file name")
         }

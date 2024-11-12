@@ -29,6 +29,11 @@
 			path = Rings;
 			sourceTree = "<group>";
 		};
+		96682FFC2CE41CF400130BE1 /* GarageBand */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = GarageBand;
+			sourceTree = "<group>";
+		};
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -47,6 +52,7 @@
 			children = (
 				964EA0332CD537F900CDD643 /* Rings */,
 				964EA0322CD537F900CDD643 /* Products */,
+				96682FFC2CE41CF400130BE1 /* GarageBand */,
 			);
 			sourceTree = "<group>";
 		};
@@ -75,6 +81,7 @@
 			);
 			fileSystemSynchronizedGroups = (
 				964EA0332CD537F900CDD643 /* Rings */,
+				96682FFC2CE41CF400130BE1 /* GarageBand */,
 			);
 			name = Rings;
 			packageProductDependencies = (

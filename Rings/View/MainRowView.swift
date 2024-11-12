@@ -25,6 +25,8 @@ struct MainRowView: View {
     
     @Binding var fileDirectoryURL: URL?
     
+
+    
     
     private func fontSize(for characterCount: Int) -> CGFloat {
         switch characterCount {
@@ -75,15 +77,44 @@ struct MainRowView: View {
                     }
                     Spacer()
                 }
-                Image(systemName: "pencil.circle.fill")
-                    .resizable()
-                    .frame(width: 20, height: 20)
-                    .foregroundColor(Color.gray.opacity(0.8))
-                    .padding()
-                    .onTapGesture{
-                        changeNameAlert = true
-                        fileDirectoryURL = fileURL
-                    }
+                VStack{
+                    Spacer()
+                        .frame(height: 10)
+                    Image(systemName: "pencil.circle.fill")
+                        .resizable()
+                        .frame(width: 20, height: 20)
+                        .foregroundColor(Color.gray.opacity(0.8))
+                        .padding()
+                        .onTapGesture{
+                            changeNameAlert = true
+                            fileDirectoryURL = fileURL
+                        }
+                    
+
+                    AddRingtoneView()
+                        .frame(width:20 ,height: 20)
+                        .padding()
+                        .onTapGesture{
+                            var lengthCheck: Bool = {
+                                return fileLength < 39.99
+                            }()
+                            // check for length of file and approve it
+                            // if true -> take to  expot .band view.
+                            print("Checking Audio")
+                            
+                            if lengthCheck{
+                                print("we can go to to view")
+                                // create a copy garageband.band instance and edit the Audio.wav file
+                                // behind it
+                            }
+                            
+                            
+                        }
+                    Spacer()
+                        .frame(height: 10)
+                        
+                }
+                
 
                     
                 Spacer()

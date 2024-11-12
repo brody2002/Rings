@@ -3,7 +3,7 @@ Nov 12th
 Done: 18. Sort List alphabetically
 Done: 19. Add file checks to reNaming file
 Done: 20. Only show file in the view if it is of m4a format...
-Done: 21. Clear file
+
 
 
 
@@ -12,7 +12,7 @@ Done: 21. Clear file
 TODO:
 11. Garage band file creation
 12. Make little slide tutorial on how to navigate through garage band after the garageband file has been made
-
+21. Implement a check m4a < 40 seconds -> go to instructions view
 
 
 
