@@ -15,13 +15,13 @@ struct mainView: View {
     @State var navPath = NavigationPath()
     @StateObject var GAP = GlobalAudioPlayer()
     
+    // Rename File Vars
+    @State var changeNameAlert: Bool = false
+    @State var newFileName: String = ""
     
-    //TODO:
-    // * entering the chop view I need to kill the GAP and refresh the blue progress bars
-    // * I need to implement the audio chop. Give two options:
-    //   1. Overwrite file, 2. Make copy.
+    @State var fileDirectoryURL: URL?
     
-    
+
     
     var body: some View {
         NavigationStack(path: $navPath){
@@ -38,8 +38,8 @@ struct mainView: View {
                     Spacer()
                     Form {
                         List {
-                            ForEach(fileChecker.fileList, id: \.self) { file in
-                                MainRowView(fileName: file.name, fileSize: file.size.toFileSizeString(), fileLength: file.length ?? 0.0, fileURL: file.fileURL, GAP: GAP, navPath: $navPath, fileChecker: fileChecker)
+                            ForEach(fileChecker.fileList.sorted(by: { $0.name < $1.name })) { file in
+                                MainRowView(fileName: file.name, fileSize: file.size.toFileSizeString(), fileLength: file.length ?? 0.0, fileURL: file.fileURL, GAP: GAP, navPath: $navPath, fileChecker: fileChecker, changeNameAlert: $changeNameAlert, newFileName: $newFileName, fileDirectoryURL: $fileDirectoryURL)
                                     .listRowInsets(EdgeInsets(top: 10, leading: 0, bottom: 10, trailing: 0))
                                 
                                     
@@ -54,10 +54,10 @@ struct mainView: View {
                         }
                         
                     }
-                    .frame(maxWidth: .infinity, maxHeight: UIScreen.main.bounds.height * 0.7)
+//                    .frame(maxWidth: .infinity, maxHeight: UIScreen.main.bounds.height * 0.7)
                     .scrollContentBackground(.hidden)
                     .background(mainColor)
-                    Spacer()
+                    
 
                     Button(action: {
                         navPath.append(Destination.addSongView)
@@ -71,10 +71,12 @@ struct mainView: View {
                                 .frame(width: 30, height: 30)
                                 .foregroundStyle(mainColor)
                         }
-                    }.padding(.bottom , 20)
+                    }
+                        .opacity(changeNameAlert ? 0.0: 1.0)
                 }
             }
             .onAppear{
+                
                 fileChecker.fileList = fileChecker.findFiles()
                 for file in fileChecker.fileList {
                     GAP.isPlayingDict[file.fileURL] = false
@@ -90,8 +92,31 @@ struct mainView: View {
                 }
     
             }
+           
+        } .alert("Change Name", isPresented: $changeNameAlert) {
+            TextField("FileName", text: $newFileName)
+                .textInputAutocapitalization(.never)
+            Button("OK", action: {
+                
+                // fetch fileURL:
+                // make a new fileURL
+                // delete old fileURL
+            
+                // fileDirectoryURL passes in the whole path including the file!
+                
+                
+                
+                fileChecker.renameFile(currentFileName: fileDirectoryURL!.lastPathComponent, newFileName: newFileName)
+                GAP.resetProgress(for: fileDirectoryURL!.appendingPathComponent(newFileName))
+               
+                
+            })
+            Button("Cancel", role: .cancel) { }
+        } message: {
+            Text("Please enter a new file name")
         }
     }
+    
 }
 
 

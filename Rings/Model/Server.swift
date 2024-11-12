@@ -15,7 +15,7 @@ class ServerCommunicator: NSObject, UIDocumentPickerDelegate, ObservableObject{
     var fileName: String
     var youtubeLink: String
     var isLoading: Bool = false
-    private let serverLink: String = "http://10.0.0.89:5002/convert"
+    private let serverLink: String = "http://192.168.1.223:5002/convert"
     
     init(fileName: String = "", youtubeLink: String = "") {
         self.fileName = fileName

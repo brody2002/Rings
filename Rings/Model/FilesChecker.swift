@@ -10,7 +10,9 @@ import Combine
 import Foundation
 
 
-struct FileDetails: Hashable {
+struct FileDetails: Hashable, Identifiable {
+    var id = UUID()
+    
     let name: String
     let size: Int64 // File size in bytes
     let length: TimeInterval? // File length in seconds, if applicable
@@ -66,13 +68,14 @@ class FilesChecker: ObservableObject {
                 if fileURL.pathExtension.lowercased() == "m4a" || fileURL.pathExtension.lowercased() == "m4a" {
                     let asset = AVURLAsset(url: fileURL)
                     fileLength = asset.duration.seconds
+                    let fileSize = attributes.fileSize ?? 0
+                    let fileDetails = FileDetails(name: fileName, size: Int64(fileSize), length: fileLength, fileURL: fileURL)
+                    print("\n\nFileDetails: \(fileDetails)\n\n")
+                    fileDetailsList.append(fileDetails)
                 }
                 
                 
-                let fileSize = attributes.fileSize ?? 0
-                let fileDetails = FileDetails(name: fileName, size: Int64(fileSize), length: fileLength, fileURL: fileURL)
-                print("\n\nFileDetails: \(fileDetails)\n\n")
-                fileDetailsList.append(fileDetails)
+                
             }
             
         } catch {
@@ -88,6 +91,11 @@ class FilesChecker: ObservableObject {
     }
     
     func renameFile(currentFileName: String, newFileName: String) {
+        
+        print(currentFileName)
+        print(newFileName)
+        
+        
         let currentFileURL = folderPath.appendingPathComponent(currentFileName)
         let newFileURL = folderPath.appendingPathComponent("\(newFileName).m4a")
         let fileManager = FileManager.default

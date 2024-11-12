@@ -15,14 +15,16 @@ struct MainRowView: View {
     @StateObject var GAP: GlobalAudioPlayer
     @State private var holdingRow: Bool = false
     @Binding var navPath: NavigationPath
-    @State var changeNameAlert: Bool = false
+    @StateObject var fileChecker: FilesChecker
 
     let maxCharacters = 27
     @State var truncatedFileName: String? = ""
-    @State var newFileName: String = ""
-    @StateObject var fileChecker: FilesChecker
     
-    @State var directoryURL: URL?
+    @Binding var changeNameAlert: Bool
+    @Binding var newFileName: String
+    
+    @Binding var fileDirectoryURL: URL?
+    
     
     private func fontSize(for characterCount: Int) -> CGFloat {
         switch characterCount {
@@ -80,32 +82,16 @@ struct MainRowView: View {
                     .padding()
                     .onTapGesture{
                         changeNameAlert = true
+                        fileDirectoryURL = fileURL
                     }
-                    .alert("Change Name", isPresented: $changeNameAlert) {
-                        TextField("FileName", text: $newFileName)
-                            .textInputAutocapitalization(.never)
-                        Button("OK", action: {
-                            
-                            // fetch fileURL:
-                            // make a new fileURL
-                            // delete old fileURL
-                            
-                            fileChecker.renameFile(currentFileName: fileName, newFileName: newFileName)
-                            GAP.resetProgress(for: directoryURL!.appendingPathComponent(newFileName))
-                           
-                            
-                        })
-                        Button("Cancel", role: .cancel) { }
-                    } message: {
-                        Text("Please enter a new userName")
-                    }
+
                     
                 Spacer()
                     
             }
         }
         .onAppear{
-            directoryURL = fileURL.deletingLastPathComponent()
+            
             self.truncatedFileName = fileName.count > maxCharacters ? "\(fileName.prefix(maxCharacters))…" : fileName
         }
         .frame(height: 80)
@@ -132,7 +118,7 @@ struct MainRowView: View {
     
     ZStack{
         Color.green.ignoresSafeArea()
-        MainRowView(fileName: "505 CoastContra_slice3.m4a", fileSize: "2.7Mb", fileLength: 221.0, fileURL: URL(fileURLWithPath: ""), GAP: GlobalAudioPlayer(),navPath: .constant(NavigationPath()), fileChecker: fileChecker)
+        MainRowView(fileName: "505 CoastContra_slice3.m4a", fileSize: "2.7Mb", fileLength: 221.0, fileURL: URL(fileURLWithPath: ""), GAP: GlobalAudioPlayer(),navPath: .constant(NavigationPath()), fileChecker: fileChecker, changeNameAlert: .constant(false), newFileName: .constant(""), fileDirectoryURL: .constant(URL(fileURLWithPath: "")))
     }
    
 }
