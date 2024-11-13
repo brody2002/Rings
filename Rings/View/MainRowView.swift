@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import UIKit
 
 struct MainRowView: View {
     @State var fileName: String
@@ -95,18 +96,40 @@ struct MainRowView: View {
                         .frame(width:20 ,height: 20)
                         .padding()
                         .onTapGesture{
-                            var lengthCheck: Bool = {
-                                return fileLength < 39.99
-                            }()
-                            // check for length of file and approve it
-                            // if true -> take to  expot .band view.
-                            print("Checking Audio")
+                            // edit and create a .band file
+                            if let bandURL = Bundle.main.url(forResource: "garageband", withExtension: "band") {
+                                    print("Found .band file")
+                                    
+                                    // Traverse the contents of the .band file
+                                    let fileManager = FileManager.default
+                                    let enumerator = fileManager.enumerator(at: bandURL, includingPropertiesForKeys: nil)
+                                    
+                                // Find Audio.wav in .band package
+                                    while let file = enumerator?.nextObject() as? URL {
+                                        if file.pathExtension == "wav" {
+                                            print("Found WAV file: \(file.lastPathComponent)")
+                                            
+                                        //TODO: find m4a file of the row, convert it to wav and replace this Audio.wav and make it a saveable ringtone with UIPicker or delegate i forgot
+                                            
+                                            let outputWAVFileURL = file
+                                            
+                                            fileChecker.convertM4AToWAV(inputURL: self.fileURL, outputURL: outputWAVFileURL) { result in
+                                                                switch result {
+                                                                case .success(let outputURL):
+                                                                    print("Conversion successful! WAV file saved at: \(outputURL)")
+                                                                case .failure(let error):
+                                                                    print("Conversion failed: \(error.localizedDescription)")
+                                                                }
+                                                            }
+                                            return
+                                        }
+                                    }
+                                    
+                                    print("No WAV files found in the .band file.")
+                                } else {
+                                    print("Cannot find the .band file.")
+                                }
                             
-                            if lengthCheck{
-                                print("we can go to to view")
-                                // create a copy garageband.band instance and edit the Audio.wav file
-                                // behind it
-                            }
                             
                             
                         }
@@ -127,12 +150,15 @@ struct MainRowView: View {
         }
         .frame(height: 80)
         .onTapGesture {
-            //Slice Audio View
+            
+            
+            //Preparing for audio slice view
             print("ROW TAP")
             navPath.append(Destination.sliceAudioView(fileURL: fileURL, fileName: fileName, fileLength: fileLength))
             if GAP.audioPlayer?.isPlaying == true {
                 GAP.audioPlayer?.stop()
             }
+            print("preparing for the slice view")
             GAP.resetProgress(for: fileURL)
             GAP.resetProgressForAllOtherFiles(in: fileURL.deletingLastPathComponent(), url: fileURL)
             

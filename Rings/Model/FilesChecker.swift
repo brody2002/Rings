@@ -162,5 +162,31 @@ class FilesChecker: ObservableObject {
             print("Error deleting file \(fileName): \(error)")
         }
     }
-
+    
+    
+    func convertM4AToWAV(inputURL: URL, outputURL: URL, completion: @escaping (Result<URL, Error>) -> Void) {
+            let asset = AVAsset(url: inputURL)
+            
+            guard let exportSession = AVAssetExportSession(asset: asset, presetName: AVAssetExportPresetPassthrough) else {
+                completion(.failure(NSError(domain: "ExportSessionError", code: -1, userInfo: [NSLocalizedDescriptionKey: "Unable to create export session"])))
+                return
+            }
+            
+            exportSession.outputURL = outputURL
+            exportSession.outputFileType = .wav
+            exportSession.shouldOptimizeForNetworkUse = false
+            
+            exportSession.exportAsynchronously {
+                switch exportSession.status {
+                case .completed:
+                    completion(.success(outputURL))
+                case .failed:
+                    completion(.failure(exportSession.error ?? NSError(domain: "ExportSessionError", code: -1, userInfo: [NSLocalizedDescriptionKey: "Unknown error occurred during export"])))
+                case .cancelled:
+                    completion(.failure(NSError(domain: "ExportSessionError", code: -1, userInfo: [NSLocalizedDescriptionKey: "Export session was cancelled"])))
+                default:
+                    completion(.failure(NSError(domain: "ExportSessionError", code: -1, userInfo: [NSLocalizedDescriptionKey: "Export session failed for unknown reasons"])))
+                }
+            }
+        }
 }

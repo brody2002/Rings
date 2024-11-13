@@ -58,7 +58,8 @@ class GlobalAudioPlayer: ObservableObject {
         self.currentURL  = url
         let tempURL = url.deletingLastPathComponent()
         
-        if let started = songStartedByURL[url], started && self.prevURL == url{
+        // resume case
+        if songStartedByURL[url] == true && self.prevURL == url{
             print("song resumed at \(url.lastPathComponent)")
             self.resetProgressForAllOtherFiles(in: tempURL, url: url)
             playbackHelper(url: url)
@@ -66,10 +67,12 @@ class GlobalAudioPlayer: ObservableObject {
         }
         else {
             stopTimer()
+            print("ELSE")
             self.resetProgressForAllOtherFiles(in: tempURL, url: url)
-            print("song playing for the first time at \(url.lastPathComponent)")
+//            print("song playing for the first time at \(url.lastPathComponent)")
             loadAudioPlayer(url: url)
             playbackHelper(url: url)
+            
             
         }
         
@@ -80,7 +83,8 @@ class GlobalAudioPlayer: ObservableObject {
     }
     
     func pause(url: URL) {
-        print("pausing song at \(url.lastPathComponent)")
+//        print("pausing song at \(url.lastPathComponent)")
+        stopTimer()
         audioPlayer?.pause()
         isPlayingDict[url] = false
         self.prevURL = url
@@ -93,6 +97,7 @@ class GlobalAudioPlayer: ObservableObject {
                     self.audioProgressDict[url] = Float(currentTime)
                 }
                 // iDK if this is based off of setup or actually playing a song
+                
                 if self.audioPlayer?.isPlaying == false{
                     self.stopTimer()
                     withAnimation{
@@ -115,16 +120,17 @@ class GlobalAudioPlayer: ObservableObject {
     
     func resetProgress(for url: URL) {
         print("Resetting progressBySong of \(url.lastPathComponent)")
-        stopTimer()
+        self.stopTimer()
     
         withAnimation{
-            audioProgressDict[url] = 0.0
-            songStartedByURL[url] = false
+            self.audioProgressDict[url] = 0.0
+            self.songStartedByURL[url] = false
         }
     }
 
     // Function to reset progress for all files within a given directory
     func resetProgressForAllOtherFiles(in directoryURL: URL, url: URL) {
+        print("print resettting every file other than \(url.lastPathComponent)")
         do {
             // Retrieve all file URLs within the directory
             let fileURLs = try FileManager.default.contentsOfDirectory(at: directoryURL, includingPropertiesForKeys: nil)

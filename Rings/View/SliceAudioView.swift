@@ -98,6 +98,7 @@ struct SliceAudioView: View {
                                     if GAP.audioPlayer?.isPlaying == true {
                                         GAP.audioPlayer?.stop()
                                     }
+                                
                                     GAP.resetProgress(for: fileURL)
                                     navPath.removeLast()
                                     

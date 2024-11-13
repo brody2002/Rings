@@ -62,31 +62,38 @@ struct PlaySoundButtonView: View {
             .frame(width: 40, height: 40)
             
             .onTapGesture {
-
+                print("\(GAP.isPlayingDict[fileURL])")
                 if GAP.isPlayingDict[fileURL] == nil{
                     // fileURL isnt in dictionary from moving files in the directory
                     GAP.isPlayingDict[fileURL] = false
+                    
                     GAP.play(url: fileURL)
+                    
                 }
                 else if GAP.isPlayingDict[fileURL] == true {
+                    print("\n\npausing")
                     GAP.pause(url: fileURL)
                 } else {
+                    print("\n\nresume")
+                    
                     GAP.play(url: fileURL)
                 }
             }
-            .onLongPressGesture(minimumDuration: 0.4, // Duration in seconds
+            .onLongPressGesture(
+                minimumDuration: 1.0, // Duration in seconds
                 pressing: { isPressing in
-                    if (GAP.isPlayingDict[fileURL] ?? false) == false{
-                        buttonHold = isPressing
+                    // Optional: Use this for visual feedback or debugging, but avoid critical logic here.
+                    if isPressing {
+//                        print("Pressing started (but not long enough yet).")
+                    } else {
+//                        print("Pressing ended before long press was completed.")
                     }
-                    
                 },
                 perform: {
-                    if buttonHold{
-                        triggerHapticFeedback()
-                        GAP.resetProgress(for: fileURL)
-                        
-                    }
+                    // This is only called after the 1.0-second threshold is met.
+                    print("Long press gesture successfully performed.")
+                    triggerHapticFeedback()
+                    GAP.resetProgress(for: fileURL)
                 }
             )
         }
