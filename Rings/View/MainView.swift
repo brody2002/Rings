@@ -5,6 +5,7 @@ import AVFoundation
 enum Destination: Hashable{
     case addSongView
     case sliceAudioView(fileURL: URL, fileName: String, fileLength: CGFloat)
+    case garageBandTutorial(fileURL: URL)
 }
 
 struct mainView: View {
@@ -89,7 +90,10 @@ struct mainView: View {
                     AddSongView(navPath: $navPath, fileChecker: fileChecker)
                 case .sliceAudioView(let fileURL, let fileName, let fileLength):
                     SliceAudioView(fileURL: fileURL, fileName: fileName, fileLength: fileLength, GAP:GAP, navPath: $navPath)
+                case .garageBandTutorial(let fileURL):
+                    GarageBandTutorial(fileURL: fileURL)
                 }
+                
     
             }
            
@@ -122,15 +126,12 @@ struct mainView: View {
 
 
 #Preview {
-    do {
+    
         let sampleFileChecker = FilesChecker()
         sampleFileChecker.folderPath = URL(fileURLWithPath: "/sample/path/to/folder")
         
         return mainView(fileChecker: sampleFileChecker, GAP: GlobalAudioPlayer())
-    }
-    catch{
-        print("cant outputview")
-    }
+    
         
             
     

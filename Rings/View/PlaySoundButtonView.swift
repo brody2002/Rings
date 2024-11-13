@@ -62,7 +62,6 @@ struct PlaySoundButtonView: View {
             .frame(width: 40, height: 40)
             
             .onTapGesture {
-                print("\(GAP.isPlayingDict[fileURL])")
                 if GAP.isPlayingDict[fileURL] == nil{
                     // fileURL isnt in dictionary from moving files in the directory
                     GAP.isPlayingDict[fileURL] = false
@@ -99,15 +98,15 @@ struct PlaySoundButtonView: View {
         }
         
     }
-    private func playFileThroughFilesApp() {
-            documentInteractionController = UIDocumentInteractionController(url: fileURL)
-            documentInteractionController?.delegate = documentDelegate
-            
-            // Use presentPreview to open the file
-            if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene {
-                documentInteractionController?.presentPreview(animated: true)
-            }
-    }
+//    private func playFileThroughFilesApp() {
+//            documentInteractionController = UIDocumentInteractionController(url: fileURL)
+//            documentInteractionController?.delegate = documentDelegate
+//            
+//            // Use presentPreview to open the file
+//            if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene {
+//                documentInteractionController?.presentPreview(animated: true)
+//            }
+//    }
     
     func triggerHapticFeedback() {
         let impactFeedback = UIImpactFeedbackGenerator(style: .medium)

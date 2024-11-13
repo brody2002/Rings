@@ -82,7 +82,7 @@ struct AddSongView: View {
                     Form{
                         Section{
                             TextField("Name", text: $songName)
-                                .onChange(of: songName){ newValue in
+                                .onChange(of: songName){ oldValue, newValue in
                                     validFileName(newValue)
                                 }
                                 .focused($focusedField, equals: .fileName)
