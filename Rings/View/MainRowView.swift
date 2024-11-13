@@ -79,62 +79,83 @@ struct MainRowView: View {
                     Spacer()
                 }
                 VStack{
+                    
                     Spacer()
                         .frame(height: 10)
                     Image(systemName: "pencil.circle.fill")
                         .resizable()
                         .frame(width: 20, height: 20)
+                    
                         .foregroundColor(Color.gray.opacity(0.8))
-                        .padding()
+                        .padding(.trailing, 10)
                         .onTapGesture{
                             changeNameAlert = true
                             fileDirectoryURL = fileURL
                         }
                     
+                    Spacer()
+                        .frame(height:20)
+                    
 
                     AddRingtoneView()
                         .frame(width:20 ,height: 20)
-                        .padding()
+                        .padding(.trailing, 10)
                         .onTapGesture{
+                            
+                            func clearTemporaryDirectory() {
+                                    let tempDirectory = FileManager.default.temporaryDirectory
+                                    do {
+                                        let tempFiles = try FileManager.default.contentsOfDirectory(at: tempDirectory, includingPropertiesForKeys: nil, options: [])
+                                        for file in tempFiles {
+                                            try FileManager.default.removeItem(at: file)
+                                        }
+                                        print("Temporary directory cleared successfully.")
+                                    } catch {
+                                        print("Failed to clear temporary directory: \(error.localizedDescription)")
+                                    }
+                                }
                             // edit and create a .band file
                             if let bandURL = Bundle.main.url(forResource: "garageband", withExtension: "band") {
-                                    print("Found .band file")
+                                print("Found .band file at: \(bandURL)")
+                                
+                                // Define the destination URL in the temporary directory
+                                let temporaryURL = FileManager.default.temporaryDirectory.appendingPathComponent("garageband.band")
+                                    print("\ntempURL: \(temporaryURL)\n")
+                                do {
+                                    // Copy the .band file to the temporary URL
+                                    try FileManager.default.copyItem(at: bandURL, to: temporaryURL)
+                                    print("Successful copy found at: \(temporaryURL.path)")
                                     
-                                    // Traverse the contents of the .band file
-                                    let fileManager = FileManager.default
-                                    let enumerator = fileManager.enumerator(at: bandURL, includingPropertiesForKeys: nil)
-                                    
-                                // Find Audio.wav in .band package
-                                    while let file = enumerator?.nextObject() as? URL {
-                                        if file.pathExtension == "wav" {
-                                            print("Found WAV file: \(file.lastPathComponent)")
-                                            
-                                        //TODO: find m4a file of the row, convert it to wav and replace this Audio.wav and make it a saveable ringtone with UIPicker or delegate i forgot
-                                            
-                                            let outputWAVFileURL = file
-                                            
-                                            fileChecker.convertM4AToWAV(inputURL: self.fileURL, outputURL: outputWAVFileURL) { result in
-                                                                switch result {
-                                                                case .success(let outputURL):
-                                                                    print("Conversion successful! WAV file saved at: \(outputURL)")
-                                                                case .failure(let error):
-                                                                    print("Conversion failed: \(error.localizedDescription)")
-                                                                }
-                                                            }
-                                            return
-                                        }
+                                    let targetFileURL = temporaryURL.appendingPathComponent("/Media/Audio Files/Audio.wav")
+                                    if FileManager.default.fileExists(atPath: fileURL.path) {
+                                        print("audio file found at :\(targetFileURL)\n")
+                                        print("fileURL: \(fileURL)\n")
+                                        
+                                        //TODO: Check why this fails
+                                        do {try FileManager.default.copyItem(at: fileURL, to: targetFileURL)
+                                            print("ez money")}
+                                        catch {print("m4a to wav copy failed")}
+                            
                                     }
                                     
-                                    print("No WAV files found in the .band file.")
-                                } else {
-                                    print("Cannot find the .band file.")
+                                    
+                                    clearTemporaryDirectory()
+                                } catch {
+                                    print("Temp Copy failed: \(error.localizedDescription)")
                                 }
-                            
-                            
+                            } else {
+                                print("Could not find .band file in the bundle.")
+                            }
+                                /* TODO: Save to temporary directory and then write the .bundle file there.
+                                    then ask user to save the file.
+                                    delete the file afterwords...
+                                */
+
                             
                         }
+                    
                     Spacer()
-                        .frame(height: 10)
+                        .frame(height:10)
                         
                 }
                 

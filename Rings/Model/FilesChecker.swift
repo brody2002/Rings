@@ -163,30 +163,31 @@ class FilesChecker: ObservableObject {
         }
     }
     
+   
     
-    func convertM4AToWAV(inputURL: URL, outputURL: URL, completion: @escaping (Result<URL, Error>) -> Void) {
-            let asset = AVAsset(url: inputURL)
-            
-            guard let exportSession = AVAssetExportSession(asset: asset, presetName: AVAssetExportPresetPassthrough) else {
-                completion(.failure(NSError(domain: "ExportSessionError", code: -1, userInfo: [NSLocalizedDescriptionKey: "Unable to create export session"])))
-                return
-            }
-            
-            exportSession.outputURL = outputURL
-            exportSession.outputFileType = .wav
-            exportSession.shouldOptimizeForNetworkUse = false
-            
-            exportSession.exportAsynchronously {
-                switch exportSession.status {
-                case .completed:
-                    completion(.success(outputURL))
-                case .failed:
-                    completion(.failure(exportSession.error ?? NSError(domain: "ExportSessionError", code: -1, userInfo: [NSLocalizedDescriptionKey: "Unknown error occurred during export"])))
-                case .cancelled:
-                    completion(.failure(NSError(domain: "ExportSessionError", code: -1, userInfo: [NSLocalizedDescriptionKey: "Export session was cancelled"])))
-                default:
-                    completion(.failure(NSError(domain: "ExportSessionError", code: -1, userInfo: [NSLocalizedDescriptionKey: "Export session failed for unknown reasons"])))
-                }
-            }
+    //code from stack overflow: https://stackoverflow.com/questions/35738133/ios-code-to-convert-m4a-to-wav
+    
+    func convertM4AToWAV(inputURL: URL, outputURL: URL) throws {
+        // Define the destination file as "Audio.wav" within the outputURL
+        let destinationURL = outputURL
+        print("\ndestinationURL: \(destinationURL)\n")
+        print("\nsourceURL: \(inputURL)\n")
+        // Ensure the input file exists
+        guard FileManager.default.fileExists(atPath: inputURL.path) else {
+            throw NSError(domain: "FileError", code: 1, userInfo: [NSLocalizedDescriptionKey: "Input file does not exist at \(inputURL.path)"])
         }
+        
+        do {
+            // Copy the input file to the destination as "Audio.wav"
+            try FileManager.default.copyItem(at: inputURL, to: destinationURL.deletingLastPathComponent().appendingPathComponent("Audio2.wav"))
+            print("File successfully renamed and saved")
+            
+           
+        } catch {
+            print("Error during file operation: \(error.localizedDescription)")
+            throw error
+        }
+    }
+
+
 }
