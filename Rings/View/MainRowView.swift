@@ -136,16 +136,23 @@ struct MainRowView: View {
                                         print("fileURL: \(fileURL)\n")
                                         
                                         
-                                        do {try FileManager.default.copyItem(at: fileURL, to: targetFileURL)
-                                            print("ez money")
+                                        do {
+                                            try FileManager.default.copyItem(at: fileURL, to: targetFileURL)
+                                            print("File copied successfully!")
+                                            
+                                            // Give the user the freedom to save this file to a desired location
                                             fileExporter.saveToFilesApp(fileURL: temporaryURL)
                                             
+                                            // TODO: Implement a save file view to allow the user to choose a location
+                                        } catch {
+                                            print("File copy failed: \(error.localizedDescription)")
+                                            print("Error details: \(error)") // This provides a more detailed error object for debugging.
                                         }
-                                        catch {print("m4a to wav copy failed")}
+
                             
                                     }
                                     
-                                    clearTemporaryDirectory()
+//                                    clearTemporaryDirectory()
                                     
                                 } catch {
                                     print("Temp Copy failed: \(error.localizedDescription)")
