@@ -26,8 +26,12 @@ struct MainRowView: View {
     
     @Binding var fileDirectoryURL: URL?
     
+    // Writing to .band
+    @State private var fileToSave: URL? = nil
+    @State private var showingFileSaver = false
 
-    
+    @State var fileExporter = fileSaver()
+   
     
     private func fontSize(for characterCount: Int) -> CGFloat {
         switch characterCount {
@@ -101,7 +105,7 @@ struct MainRowView: View {
                         .frame(width:20 ,height: 20)
                         .padding(.trailing, 10)
                         .onTapGesture{
-                            
+                            clearTemporaryDirectory()
                             func clearTemporaryDirectory() {
                                     let tempDirectory = FileManager.default.temporaryDirectory
                                     do {
@@ -115,44 +119,45 @@ struct MainRowView: View {
                                     }
                                 }
                             // edit and create a .band file
-                            if let bandURL = Bundle.main.url(forResource: "garageband", withExtension: "band") {
+                            if let bandURL = Bundle.main.url(forResource: "AudioFile", withExtension: "band") {
                                 print("Found .band file at: \(bandURL)")
                                 
                                 // Define the destination URL in the temporary directory
-                                let temporaryURL = FileManager.default.temporaryDirectory.appendingPathComponent("garageband.band")
+                                let temporaryURL = FileManager.default.temporaryDirectory.appendingPathComponent("AudioFile.band")
                                     print("\ntempURL: \(temporaryURL)\n")
                                 do {
                                     // Copy the .band file to the temporary URL
                                     try FileManager.default.copyItem(at: bandURL, to: temporaryURL)
                                     print("Successful copy found at: \(temporaryURL.path)")
                                     
-                                    let targetFileURL = temporaryURL.appendingPathComponent("/Media/Audio Files/Audio.wav")
+                                    let targetFileURL = temporaryURL.appendingPathComponent("/Media/Ringtone.wav")
                                     if FileManager.default.fileExists(atPath: fileURL.path) {
                                         print("audio file found at :\(targetFileURL)\n")
                                         print("fileURL: \(fileURL)\n")
                                         
-                                        //TODO: Check why this fails
+                                        
                                         do {try FileManager.default.copyItem(at: fileURL, to: targetFileURL)
-                                            print("ez money")}
+                                            print("ez money")
+                                            fileExporter.saveToFilesApp(fileURL: temporaryURL)
+                                            
+                                        }
                                         catch {print("m4a to wav copy failed")}
                             
                                     }
                                     
-                                    
                                     clearTemporaryDirectory()
+                                    
                                 } catch {
                                     print("Temp Copy failed: \(error.localizedDescription)")
                                 }
                             } else {
                                 print("Could not find .band file in the bundle.")
                             }
-                                /* TODO: Save to temporary directory and then write the .bundle file there.
-                                    then ask user to save the file.
-                                    delete the file afterwords...
-                                */
+                                
 
                             
                         }
+                    
                     
                     Spacer()
                         .frame(height:10)
@@ -169,6 +174,7 @@ struct MainRowView: View {
             
             self.truncatedFileName = fileName.count > maxCharacters ? "\(fileName.prefix(maxCharacters))…" : fileName
         }
+        
         .frame(height: 80)
         .onTapGesture {
             
@@ -189,7 +195,33 @@ struct MainRowView: View {
         },perform: {})
         .opacity(holdingRow ? 0.4 : 1.0)
     }
+    
+    // Document picker delegate method (if needed)
+       
 }
+
+class fileSaver: NSObject, UIDocumentPickerDelegate {
+    func documentPickerWasCancelled(_ controller: UIDocumentPickerViewController) {
+        print("Document picker was cancelled.")
+    }
+    
+    func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {
+        print("Document saved to Files app at: \(urls.first?.absoluteString ?? "unknown location")")
+    }
+
+    func saveToFilesApp(fileURL: URL) {
+            let documentPicker = UIDocumentPickerViewController(forExporting: [fileURL])
+            documentPicker.modalPresentationStyle = .formSheet
+            documentPicker.delegate = self
+
+            if let topController = UIApplication.shared.windows.first?.rootViewController {
+                topController.present(documentPicker, animated: true, completion: nil)
+            }
+        }
+}
+
+
+
 
 #Preview {
     @Previewable @StateObject var fileChecker = FilesChecker()
