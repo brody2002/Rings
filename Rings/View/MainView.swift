@@ -54,17 +54,23 @@ struct mainView: View {
                                     fileDirectoryURL: $fileDirectoryURL
                                 )
                                 .listSectionSpacing(20)
-                                
                                 .listRowInsets(EdgeInsets(top: 30, leading: 0, bottom: 30, trailing: 0))
                                 .cornerRadius(20)
                             }
                             .onDelete { indexSet in
-                                indexSet.forEach { index in
-                                    let file = fileChecker.fileList[index]
+                                // Sort the file list before deleting to match the displayed order
+                                let sortedFileList = fileChecker.fileList.sorted(by: { $0.name < $1.name })
+
+                                // Delete the items from the original file list based on sorted indices
+                                indexSet.map { sortedFileList[$0] }.forEach { file in
                                     fileChecker.deleteSongFile(fileName: file.name)
                                 }
+
+                                // Refresh the fileChecker list if necessary
+                                fileChecker.updateFileList()
                             }
                         }
+
                         
                         .scrollContentBackground(.hidden) // Ensure background matches
                         .background(AppColors.secondary)
