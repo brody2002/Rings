@@ -13,4 +13,5 @@ struct AppColors {
     static let secondary = Color.blue
     static let third = Color.black
     static let slice = Color.orange
+    static let white = Color.white
 }

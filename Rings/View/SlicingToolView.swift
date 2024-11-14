@@ -25,12 +25,12 @@ struct Bar: View {
                         
                         
                         Rectangle()
-                            .fill(AppColors.third.opacity(0.2))
+                            .fill(AppColors.white.opacity(0.2))
                             .frame(height: rectangleHeight)
                   
                         
                         Rectangle()
-                            .fill(AppColors.third)
+                            .fill(AppColors.white)
                             .frame(
                                 width: (capsuleEndRatio - capsuleStartRatio) * totalWidth + capsuleWidth,
                                 height: rectangleHeight
@@ -43,6 +43,7 @@ struct Bar: View {
                             Capsule()
                                 .frame(width: capsuleWidth, height: isHoldingStartButton ? 54 : 38)
                                 .offset(x: capsuleStartRatio * totalWidth)
+                                .foregroundStyle(AppColors.white)
                                 .gesture(
                                     DragGesture()
                                         .onChanged { value in
@@ -62,7 +63,7 @@ struct Bar: View {
                             Capsule()
                                 .frame(width: capsuleWidth, height: isHoldingEndButton ? 54 : 38)
                                 .offset(x: capsuleEndRatio * totalWidth - (capsuleWidth * 1.31))
-                                
+                                .foregroundStyle(AppColors.white)
                                 .gesture(
                                     DragGesture()
                                         .onChanged { value in

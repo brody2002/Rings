@@ -55,7 +55,7 @@ struct AudioAssetTimelineBackground: View {
                                     ),
                                     cornerRadius: 1
                                 ),
-                                with: .color(AppColors.secondary)
+                                with: .color(AppColors.white)
                             )
                         }
                     }

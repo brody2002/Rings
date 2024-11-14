@@ -41,7 +41,7 @@ struct SliceAudioView: View {
     var body: some View {
         GeometryReader{ metrics in
             ZStack {
-                AppColors.backgroundColor.ignoresSafeArea()
+                AppColors.secondary.ignoresSafeArea()
                 AudioAssetTimelineBackground(audioUrl: fileURL, isWaveFormShowing: $isWaveFormShowing)
                     .overlay(
                         
@@ -53,7 +53,7 @@ struct SliceAudioView: View {
                                 let rectWidth = (capsuleEndRatio - capsuleStartRatio) * totalWidth
                                 
                                 Rectangle()
-                                    .fill(AppColors.slice.opacity(0.7))
+                                    .fill(AppColors.backgroundColor.opacity(0.7))
                                     .frame(width: rectWidth)
                                     .cornerRadius(20)
                                     .offset(x: rectStart)
@@ -88,7 +88,7 @@ struct SliceAudioView: View {
                         Image(systemName: "arrowshape.turn.up.backward.fill")
                             .resizable()
                             .frame(width: 60, height: 60)
-                            .foregroundColor(self.isHoldingBack ? AppColors.third.opacity(0.6) : AppColors.third)
+                            .foregroundColor(self.isHoldingBack ? AppColors.white.opacity(0.6) : AppColors.white)
                             .onLongPressGesture(minimumDuration: 0.05, pressing: { pressing in
                                 isHoldingBack = pressing
                             }, perform: {
@@ -109,7 +109,7 @@ struct SliceAudioView: View {
                         Text("Slice Audio")
                             .font(.system(size: 26))
                             .bold()
-                            .foregroundColor(AppColors.third)
+                            .foregroundColor(AppColors.white)
                             .padding(.top, 20)
                         Spacer()
                         Spacer()
@@ -119,6 +119,7 @@ struct SliceAudioView: View {
                             if isPlayingAudio{
                                 Text("\(HandyFunctions.convertLengthSnippet(snippetTime))")
                                     .font(Font.system(size: 20, design: .monospaced).weight(.light))
+                                    .foregroundColor(AppColors.white)
                             }
                         }
                         
@@ -134,9 +135,11 @@ struct SliceAudioView: View {
                         HStack(spacing: 0) {
                             Text("Start: ")
                                 .font(.system(size: 20, weight: .regular)) // Regular font for "End"
+                                .foregroundStyle(AppColors.white)
                             
                             Text("\(HandyFunctions.convertLengthSnippet(startCut))")
                                 .font(Font.system(size: 20, design: .monospaced).weight(.light)) // Monospaced font for the converted length
+                                .foregroundStyle(AppColors.white)
                         }
                         .onChange(of: startCut) {
                             showBlackBar = false
@@ -153,9 +156,11 @@ struct SliceAudioView: View {
                         HStack(spacing: 0) {
                             Text("End: ")
                                 .font(.system(size: 20, weight: .regular)) // Regular font for "End"
+                                .foregroundStyle(AppColors.white)
                             
                             Text("\(HandyFunctions.convertLengthSnippet(endCut))")
                                 .font(Font.system(size: 20, design: .monospaced).weight(.light)) // Monospaced font for the converted length
+                                .foregroundStyle(AppColors.white)
                         }
                         .onChange(of: endCut) {
                             showBlackBar = false
@@ -182,11 +187,11 @@ struct SliceAudioView: View {
                                 RoundedRectangle(cornerRadius: 4)
                                     .stroke(lineWidth: 4)
                                     .frame(width: 90, height: 90)
-                                    .foregroundColor(AppColors.third)
+                                    .foregroundColor(AppColors.white)
                                 Image(systemName: isPlayingAudio ? "pause.fill" : "play.fill")
                                     .resizable()
                                     .frame(width: 50, height: 50)
-                                    .foregroundColor(AppColors.third)
+                                    .foregroundColor(AppColors.white)
                             }
                             .onTapGesture {
                                 if !isPlayingAudio {
@@ -220,11 +225,11 @@ struct SliceAudioView: View {
                                 RoundedRectangle(cornerRadius: 4)
                                     .stroke(lineWidth: 4)
                                     .frame(width: 90, height: 90)
-                                    .foregroundStyle(AppColors.third)
+                                    .foregroundStyle(AppColors.white)
                                 Image(systemName: "scissors")
                                     .resizable()
                                     .frame(width: 50, height: 50)
-                                    .foregroundColor(AppColors.third)
+                                    .foregroundColor(AppColors.white)
                             }
                             .onTapGesture {
                                 cutAudioAlert = true

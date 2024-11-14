@@ -26,47 +26,56 @@ struct mainView: View {
     var body: some View {
         NavigationStack(path: $navPath) {
             ZStack {
-                AppColors.backgroundColor.ignoresSafeArea()
+                AppColors.secondary.ignoresSafeArea()
                 VStack {
                     HStack {
                         Text("Audio List")
-                            .foregroundStyle(AppColors.third)
-                            .font(.system(size: 30))
-                            .bold()
-                            .padding(.top, 30)
+                            .font(.system(size: 28, weight: .bold))
+                            .multilineTextAlignment(.center)
+                            .padding(.horizontal)
+                            .foregroundColor(AppColors.white)
+                            .padding(.top, 20)
                     }
                     Spacer()
-                    
-                    // Limit the scrollable area to the List
-                    List {
-                        ForEach(fileChecker.fileList.sorted(by: { $0.name < $1.name })) { file in
-                            MainRowView(
-                                fileName: file.name,
-                                fileSize: file.size.toFileSizeString(),
-                                fileLength: file.length ?? 0.0,
-                                fileURL: file.fileURL,
-                                GAP: GAP,
-                                navPath: $navPath,
-                                fileChecker: fileChecker,
-                                changeNameAlert: $changeNameAlert,
-                                newFileName: $newFileName,
-                                fileDirectoryURL: $fileDirectoryURL
-                            )
-                            
-                            .listRowInsets(EdgeInsets(top: 10, leading: 0, bottom: 10, trailing: 0))
-                        }
-                        .onDelete { indexSet in
-                            indexSet.forEach { index in
-                                let file = fileChecker.fileList[index]
-                                fileChecker.deleteSongFile(fileName: file.name)
+                    VStack{
+                        // Limit the scrollable area to the List
+                        List {
+                            ForEach(fileChecker.fileList.sorted(by: { $0.name < $1.name })) { file in
+                                MainRowView(
+                                    fileName: file.name,
+                                    fileSize: file.size.toFileSizeString(),
+                                    fileLength: file.length ?? 0.0,
+                                    fileURL: file.fileURL,
+                                    GAP: GAP,
+                                    navPath: $navPath,
+                                    fileChecker: fileChecker,
+                                    changeNameAlert: $changeNameAlert,
+                                    newFileName: $newFileName,
+                                    fileDirectoryURL: $fileDirectoryURL
+                                )
+                                .listSectionSpacing(20)
+                                
+                                .listRowInsets(EdgeInsets(top: 30, leading: 0, bottom: 30, trailing: 0))
+                                .cornerRadius(20)
+                            }
+                            .onDelete { indexSet in
+                                indexSet.forEach { index in
+                                    let file = fileChecker.fileList[index]
+                                    fileChecker.deleteSongFile(fileName: file.name)
+                                }
                             }
                         }
+                        
+                        .scrollContentBackground(.hidden) // Ensure background matches
+                        .background(AppColors.secondary)
+                        .frame(maxHeight: UIScreen.main.bounds.height * 0.7) // Restrict List height
+                        
                     }
-                    .scrollContentBackground(.hidden) // Ensure background matches
-                    .background(AppColors.backgroundColor)
-                    .frame(maxHeight: UIScreen.main.bounds.height * 0.7) // Restrict List height
-                    .cornerRadius(20) // Corner radius
-                    .clipShape(RoundedRectangle(cornerRadius: 20))
+                    .cornerRadius(20)
+                    .clipShape(RoundedRectangle(cornerRadius: 40))
+                    .padding()
+                    
+                    
                     
                     // Clip explicitly to ensure the radius is enforced
                     Spacer()
@@ -76,12 +85,12 @@ struct mainView: View {
                     }) {
                         ZStack {
                             Circle()
-                                .fill(AppColors.third)
+                                .fill(AppColors.secondary)
                                 .frame(width: 60, height: 60)
                             Image(systemName: "plus")
                                 .resizable()
                                 .frame(width: 30, height: 30)
-                                .foregroundStyle(AppColors.backgroundColor)
+                                .foregroundStyle(AppColors.white)
                         }
                     }
                     .opacity(changeNameAlert ? 0.0 : 1.0)
@@ -100,7 +109,7 @@ struct mainView: View {
                 case .sliceAudioView(let fileURL, let fileName, let fileLength):
                     SliceAudioView(fileURL: fileURL, fileName: fileName, fileLength: fileLength, GAP: GAP, navPath: $navPath)
                 case .garageBandTutorial(let fileURL):
-                    GarageBandTutorial(fileURL: fileURL)
+                    GarageBandTutorial(fileURL: fileURL, navPath: $navPath)
                 }
             }
             .alert("Change Name", isPresented: $changeNameAlert) {
