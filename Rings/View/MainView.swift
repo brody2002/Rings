@@ -11,7 +11,6 @@ enum Destination: Hashable{
 struct mainView: View {
     
     @State private var showAddSongSheet: Bool = false
-    @State private var mainColor = AppColors.backgroundColor
     @StateObject var fileChecker: FilesChecker
     @State var navPath = NavigationPath()
     @StateObject var GAP = GlobalAudioPlayer()
@@ -25,103 +24,103 @@ struct mainView: View {
 
     
     var body: some View {
-        NavigationStack(path: $navPath){
+        NavigationStack(path: $navPath) {
             ZStack {
-                mainColor.ignoresSafeArea()
+                AppColors.backgroundColor.ignoresSafeArea()
                 VStack {
                     HStack {
-                        Text("Song List")
-                            .foregroundStyle(AppColors.secondary)
+                        Text("Audio List")
+                            .foregroundStyle(AppColors.third)
                             .font(.system(size: 30))
                             .bold()
                             .padding(.top, 30)
                     }
                     Spacer()
-                    Form {
-                        List {
-                            ForEach(fileChecker.fileList.sorted(by: { $0.name < $1.name })) { file in
-                                MainRowView(fileName: file.name, fileSize: file.size.toFileSizeString(), fileLength: file.length ?? 0.0, fileURL: file.fileURL, GAP: GAP, navPath: $navPath, fileChecker: fileChecker, changeNameAlert: $changeNameAlert, newFileName: $newFileName, fileDirectoryURL: $fileDirectoryURL)
-                                    .listRowInsets(EdgeInsets(top: 10, leading: 0, bottom: 10, trailing: 0))
-                                
-                                    
-                            }
-                            .onDelete { indexSet in
-                                    indexSet.forEach { index in
-                                        let file = fileChecker.fileList[index]
-                                        fileChecker.deleteSongFile(fileName: file.name)
-                                    }
-                            }
-                            
-                        }
-                        
-                    }
-//                    .frame(maxWidth: .infinity, maxHeight: UIScreen.main.bounds.height * 0.7)
-                    .scrollContentBackground(.hidden)
-                    .background(mainColor)
                     
-
+                    // Limit the scrollable area to the List
+                    List {
+                        ForEach(fileChecker.fileList.sorted(by: { $0.name < $1.name })) { file in
+                            MainRowView(
+                                fileName: file.name,
+                                fileSize: file.size.toFileSizeString(),
+                                fileLength: file.length ?? 0.0,
+                                fileURL: file.fileURL,
+                                GAP: GAP,
+                                navPath: $navPath,
+                                fileChecker: fileChecker,
+                                changeNameAlert: $changeNameAlert,
+                                newFileName: $newFileName,
+                                fileDirectoryURL: $fileDirectoryURL
+                            )
+                            
+                            .listRowInsets(EdgeInsets(top: 10, leading: 0, bottom: 10, trailing: 0))
+                        }
+                        .onDelete { indexSet in
+                            indexSet.forEach { index in
+                                let file = fileChecker.fileList[index]
+                                fileChecker.deleteSongFile(fileName: file.name)
+                            }
+                        }
+                    }
+                    .scrollContentBackground(.hidden) // Ensure background matches
+                    .background(AppColors.backgroundColor)
+                    .frame(maxHeight: UIScreen.main.bounds.height * 0.7) // Restrict List height
+                    .cornerRadius(20) // Corner radius
+                    .clipShape(RoundedRectangle(cornerRadius: 20))
+                    
+                    // Clip explicitly to ensure the radius is enforced
+                    Spacer()
+                    
                     Button(action: {
                         navPath.append(Destination.addSongView)
                     }) {
                         ZStack {
                             Circle()
-                                .fill(AppColors.secondary)
+                                .fill(AppColors.third)
                                 .frame(width: 60, height: 60)
                             Image(systemName: "plus")
                                 .resizable()
                                 .frame(width: 30, height: 30)
-                                .foregroundStyle(mainColor)
+                                .foregroundStyle(AppColors.backgroundColor)
                         }
                     }
-                        .opacity(changeNameAlert ? 0.0: 1.0)
+                    .opacity(changeNameAlert ? 0.0 : 1.0)
                 }
             }
-            .onAppear{
-                
+            .onAppear {
                 fileChecker.fileList = fileChecker.findFiles()
                 for file in fileChecker.fileList {
                     GAP.isPlayingDict[file.fileURL] = false
                 }
             }
-            // Use navigationDestination to map Destination cases to views if needed for other cases
             .navigationDestination(for: Destination.self) { destination in
                 switch destination {
                 case .addSongView:
                     AddSongView(navPath: $navPath, fileChecker: fileChecker)
                 case .sliceAudioView(let fileURL, let fileName, let fileLength):
-                    SliceAudioView(fileURL: fileURL, fileName: fileName, fileLength: fileLength, GAP:GAP, navPath: $navPath)
+                    SliceAudioView(fileURL: fileURL, fileName: fileName, fileLength: fileLength, GAP: GAP, navPath: $navPath)
                 case .garageBandTutorial(let fileURL):
                     GarageBandTutorial(fileURL: fileURL)
                 }
-                
-    
             }
-           
-        } .alert("Change Name", isPresented: $changeNameAlert) {
-            TextField("FileName", text: $newFileName)
-                .textInputAutocapitalization(.never)
-            Button("OK", action: {
-                
-                // fetch fileURL:
-                // make a new fileURL
-                // delete old fileURL
-            
-                // fileDirectoryURL passes in the whole path including the file!
-                
-                
-                
-                fileChecker.renameFile(currentFileName: fileDirectoryURL!.lastPathComponent, newFileName: newFileName)
-                GAP.resetProgress(for: fileDirectoryURL!.appendingPathComponent(newFileName))
-                newFileName = ""
-               
-                
-            })
-            Button("Cancel", role: .cancel) {newFileName = ""}
-        } message: {
-            Text("Please enter a new file name")
+            .alert("Change Name", isPresented: $changeNameAlert) {
+                TextField("FileName", text: $newFileName)
+                    .textInputAutocapitalization(.never)
+                Button("OK") {
+                    guard let directoryURL = fileDirectoryURL else { return }
+                    fileChecker.renameFile(currentFileName: directoryURL.lastPathComponent, newFileName: newFileName)
+                    GAP.resetProgress(for: directoryURL.appendingPathComponent(newFileName))
+                    newFileName = ""
+                }
+                Button("Cancel", role: .cancel) {
+                    newFileName = ""
+                }
+            } message: {
+                Text("Please enter a new file name")
+            }
         }
     }
-    
+
 }
 
 

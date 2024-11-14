@@ -8,234 +8,140 @@
 import SwiftUI
 
 struct GarageBandTutorial: View {
-    
-    @State var fileExporter = fileSaver()
+    @State var fileExporter = FileSaver()
     @State var fileURL: URL
-    
-    
-    
+
     var body: some View {
-        ZStack{
+        ZStack {
             AppColors.backgroundColor.ignoresSafeArea()
-            ScrollView{
-                Spacer()
-                    .frame(height: 20)
-                Text("Export Ringtones Through GarageBand")
-                    .font(.system(size: 28))
-                    .multilineTextAlignment(.center)
-                    .bold()
-                Spacer()
-                    .frame(height: 50)
-                ZStack{
-                    Rectangle()
-                        .frame(width: 140, height: 110)
-                        .foregroundStyle(AppColors.secondary)
-                        .cornerRadius(20)
-                    Image(systemName: "square.and.arrow.up")
-                        .resizable()
-                        .frame(width: 80, height: 80)
-                        .foregroundColor(Color.white)
-                        .padding(.bottom, 10)
+            ScrollView {
+                VStack(spacing: 30) {
+                    // Title
+                    Text("Export Ringtones Through GarageBand")
+                        .font(.system(size: 28, weight: .bold))
+                        .multilineTextAlignment(.center)
+                        .padding(.horizontal)
+                        .foregroundColor(AppColors.third)
+
+                    // Export Button
+                    Button(action: handleExport) {
+                        ZStack {
+                            RoundedRectangle(cornerRadius: 20)
+                                .fill(AppColors.secondary)
+                                .frame(width: 150, height: 120)
+                            Image(systemName: "square.and.arrow.up")
+                                .resizable()
+                                .scaledToFit()
+                                .frame(width: 80, height: 80)
+                                .foregroundColor(.white)
+                        }
+                    }
+                    .padding(.top, 20)
+
+                    // Steps
+                    VStack(alignment: .leading, spacing: 25) {
+                        Spacer()
+                            .frame(height: 20)
+                        tutorialStep(number: "1", text: "Save the GarageBand file to the desired location by tapping the share button above.")
+                        tutorialStep(number: "2", text: "Long-press the project file in the desired location and press Share.")
+                        tutorialStep(number: "3", text: "Pr")
+                        tutorialStep(number: "3", text: "Press Ringtones and confirm your selection.")
+                        tutorialStep(number: "4", text: "Click Export to complete the ringtone. Now you can use it via Settings → Sounds & Haptics → Ringtones.")
+                        Spacer()
+                            .frame(height: 20)
+                    }
+                    .padding(.horizontal, 20)
+                    .background(AppColors.secondary)
+                    .cornerRadius(20)
+                    .padding()
                 }
-                .onTapGesture{
-                                           clearTemporaryDirectory()
-                                           func clearTemporaryDirectory() {
-                                                   let tempDirectory = FileManager.default.temporaryDirectory
-                                                   do {
-                                                       let tempFiles = try FileManager.default.contentsOfDirectory(at: tempDirectory, includingPropertiesForKeys: nil, options: [])
-                                                       for file in tempFiles {
-                                                           try FileManager.default.removeItem(at: file)
-                                                       }
-                                                       print("Temporary directory cleared successfully.")
-                                                   } catch {
-                                                       print("Failed to clear temporary directory: \(error.localizedDescription)")
-                                                   }
-                                               }
-                                           // edit and create a .band file
-                                           if let bandURL = Bundle.main.url(forResource: "AudioFile", withExtension: "band") {
-                                               print("Found .band file at: \(bandURL)")
-                                               
-                                               // Define the destination URL in the temporary directory
-                                               let temporaryURL = FileManager.default.temporaryDirectory.appendingPathComponent("AudioFile.band")
-                                                   print("\ntempURL: \(temporaryURL)\n")
-                                               do {
-                                                   // Copy the .band file to the temporary URL
-                                                   try FileManager.default.copyItem(at: bandURL, to: temporaryURL)
-                                                   print("Successful copy found at: \(temporaryURL.path)")
-                                                   
-                                                   let targetFileURL = temporaryURL.appendingPathComponent("/Media/Ringtone.wav")
-                                                   if FileManager.default.fileExists(atPath: fileURL.path) {
-                                                       print("audio file found at :\(targetFileURL)\n")
-                                                       print("fileURL: \(fileURL)\n")
-                                                       
-                                                       
-                                                       do {
-                                                           try FileManager.default.copyItem(at: fileURL, to: targetFileURL)
-                                                           print("File copied successfully!")
-                                                           
-                                                           // Give the user the freedom to save this file to a desired location
-                                                           fileExporter.saveToFilesApp(fileURL: temporaryURL)
-                                                           
-                                                           // TODO: Implement a save file view to allow the user to choose a location
-                                                       } catch {
-                                                           print("File copy failed: \(error.localizedDescription)")
-                                                           print("Error details: \(error)") // This provides a more detailed error object for debugging.
-                                                       }
-
-                                           
-                                                   }
-                                                   
-               //                                    clearTemporaryDirectory()
-                                                   
-                                               } catch {
-                                                   print("Temp Copy failed: \(error.localizedDescription)")
-                                               }
-                                           } else {
-                                               print("Could not find .band file in the bundle.")
-                                           }
-                                               
-
-                                           
-                                       } .onTapGesture{
-                                           clearTemporaryDirectory()
-                                           func clearTemporaryDirectory() {
-                                                   let tempDirectory = FileManager.default.temporaryDirectory
-                                                   do {
-                                                       let tempFiles = try FileManager.default.contentsOfDirectory(at: tempDirectory, includingPropertiesForKeys: nil, options: [])
-                                                       for file in tempFiles {
-                                                           try FileManager.default.removeItem(at: file)
-                                                       }
-                                                       print("Temporary directory cleared successfully.")
-                                                   } catch {
-                                                       print("Failed to clear temporary directory: \(error.localizedDescription)")
-                                                   }
-                                               }
-                                           // edit and create a .band file
-                                           if let bandURL = Bundle.main.url(forResource: "AudioFile", withExtension: "band") {
-                                               print("Found .band file at: \(bandURL)")
-                                               
-                                               // Define the destination URL in the temporary directory
-                                               let temporaryURL = FileManager.default.temporaryDirectory.appendingPathComponent("AudioFile.band")
-                                                   print("\ntempURL: \(temporaryURL)\n")
-                                               do {
-                                                   // Copy the .band file to the temporary URL
-                                                   try FileManager.default.copyItem(at: bandURL, to: temporaryURL)
-                                                   print("Successful copy found at: \(temporaryURL.path)")
-                                                   
-                                                   let targetFileURL = temporaryURL.appendingPathComponent("/Media/Ringtone.wav")
-                                                   if FileManager.default.fileExists(atPath: fileURL.path) {
-                                                       print("audio file found at :\(targetFileURL)\n")
-                                                       print("fileURL: \(fileURL)\n")
-                                                       
-                                                       
-                                                       do {
-                                                           try FileManager.default.copyItem(at: fileURL, to: targetFileURL)
-                                                           print("File copied successfully!")
-                                                           
-                                                           // Give the user the freedom to save this file to a desired location
-                                                           fileExporter.saveToFilesApp(fileURL: temporaryURL)
-                                                           
-                                                           // TODO: Implement a save file view to allow the user to choose a location
-                                                       } catch {
-                                                           print("File copy failed: \(error.localizedDescription)")
-                                                           print("Error details: \(error)") // This provides a more detailed error object for debugging.
-                                                       }
-
-                                           
-                                                   }
-                                                   
-               //                                    clearTemporaryDirectory()
-                                                   
-                                               } catch {
-                                                   print("Temp Copy failed: \(error.localizedDescription)")
-                                               }
-                                           } else {
-                                               print("Could not find .band file in the bundle.")
-                                           }
-                                               
-
-                                           
-                                       }
-                Spacer()
-                    .frame(height: 50)
-               
-                
-                VStack(alignment: .leading){
-                    VStack{
-                        
-                        Text("1: ")
-                        + Text("Save")
-                            .bold()
-                            .foregroundStyle(AppColors.secondary)
-                        + Text(" the ")
-                        + Text("GarageBand")
-                        + Text(" file in the desired location by ")
-                        + Text("Tapping ")
-                            .bold()
-                            .foregroundStyle(AppColors.secondary)
-                        + Text("the shared button above")
-                    }
-                    Spacer()
-                        .frame(height: 20)
-                    VStack{
-                        Text("2:")
-                        + Text(" Long Press")
-                            .bold()
-                            .foregroundColor(AppColors.secondary)
-                        + Text(" the project file found in the desired location and")
-                        + Text(" Press Share")
-                            .bold()
-                            .foregroundColor(AppColors.secondary)
-                    }
-                    Spacer()
-                        .frame(height: 20)
-                    VStack{
-                        Text("3: ")
-                        + Text("Press")
-                        + Text(" RingTones")
-                            .bold()
-                            .foregroundColor(AppColors.secondary)
-                    }
-                    Spacer()
-                        .frame(height: 20)
-                    VStack{
-                        Text("4: ")
-                        + Text("Click ")
-                        + Text("Export")
-                            .bold()
-                            .foregroundColor(AppColors.secondary)
-                        + Text(" to successfuly complete the ringtone! Now you can use the ringtone found in ")
-                        + Text("Settings -> Sounds & Haptics -> Ringtones")
-                            .bold()
-                            .foregroundColor(AppColors.secondary)
-                    }
-                }
+                .padding(.top, 20)
             }
-            
         }
     }
-    
-    class fileSaver: NSObject, UIDocumentPickerDelegate {
+
+    // Action handler for export button
+    private func handleExport() {
+        clearTemporaryDirectory()
+        createAndExportBandFile()
+    }
+
+    // Clear temporary directory
+    private func clearTemporaryDirectory() {
+        let tempDirectory = FileManager.default.temporaryDirectory
+        do {
+            let tempFiles = try FileManager.default.contentsOfDirectory(at: tempDirectory, includingPropertiesForKeys: nil, options: [])
+            for file in tempFiles {
+                try FileManager.default.removeItem(at: file)
+            }
+            print("Temporary directory cleared successfully.")
+        } catch {
+            print("Failed to clear temporary directory: \(error.localizedDescription)")
+        }
+    }
+
+    // Create and export .band file
+    private func createAndExportBandFile() {
+        guard let bandURL = Bundle.main.url(forResource: "AudioFile", withExtension: "band") else {
+            print("Could not find .band file in the bundle.")
+            return
+        }
+
+        let temporaryURL = FileManager.default.temporaryDirectory.appendingPathComponent("AudioFile.band")
+        do {
+            try FileManager.default.copyItem(at: bandURL, to: temporaryURL)
+            print("Successful copy found at: \(temporaryURL.path)")
+
+            let targetFileURL = temporaryURL.appendingPathComponent("/Media/Ringtone.wav")
+            if FileManager.default.fileExists(atPath: fileURL.path) {
+                do {
+                    try FileManager.default.copyItem(at: fileURL, to: targetFileURL)
+                    print("File copied successfully!")
+                    fileExporter.saveToFilesApp(fileURL: temporaryURL)
+                } catch {
+                    print("File copy failed: \(error.localizedDescription)")
+                }
+            }
+        } catch {
+            print("Temp Copy failed: \(error.localizedDescription)")
+        }
+    }
+
+    // Step view
+    private func tutorialStep(number: String, text: String) -> some View {
+        HStack(alignment: .top) {
+            Text("\(number):")
+                .font(.system(size: 20, weight: .bold))
+                .foregroundColor(.white)
+            Text(text)
+                .font(.system(size: 18))
+                .foregroundColor(Color.white)
+                .lineSpacing(4)
+        }
+    }
+
+    class FileSaver: NSObject, UIDocumentPickerDelegate {
         func documentPickerWasCancelled(_ controller: UIDocumentPickerViewController) {
             print("Document picker was cancelled.")
         }
-        
+
         func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {
             print("Document saved to Files app at: \(urls.first?.absoluteString ?? "unknown location")")
         }
 
         func saveToFilesApp(fileURL: URL) {
-                let documentPicker = UIDocumentPickerViewController(forExporting: [fileURL])
-                documentPicker.modalPresentationStyle = .formSheet
-                documentPicker.delegate = self
+            let documentPicker = UIDocumentPickerViewController(forExporting: [fileURL])
+            documentPicker.modalPresentationStyle = .formSheet
+            documentPicker.delegate = self
 
-                if let topController = UIApplication.shared.windows.first?.rootViewController {
-                    topController.present(documentPicker, animated: true, completion: nil)
-                }
+            if let topController = UIApplication.shared.windows.first?.rootViewController {
+                topController.present(documentPicker, animated: true, completion: nil)
             }
+        }
     }
 }
 
 #Preview {
     GarageBandTutorial(fileURL: URL(fileURLWithPath: ""))
 }
+

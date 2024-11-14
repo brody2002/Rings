@@ -18,7 +18,7 @@ struct MainRowView: View {
     @Binding var navPath: NavigationPath
     @StateObject var fileChecker: FilesChecker
 
-    let maxCharacters = 27
+    let maxCharacters = 22
     @State var truncatedFileName: String? = ""
     
     @Binding var changeNameAlert: Bool
