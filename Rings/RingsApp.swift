@@ -18,6 +18,7 @@ struct RingsApp: App {
                 .onAppear{
                     createCustomFolder(named: "AddedSongs")
                     fileCheck.folderPath = folderURL
+                    
                     fileCheck.fileList = fileCheck.findFiles()
                 }
                 

@@ -287,14 +287,14 @@ struct SliceAudioView: View {
             outputURL = fileURL
         } else {
             // Check if the base name already includes a "_sliceX" suffix
-            if let range = baseName.range(of: "_slice\\d+$", options: .regularExpression) {
+            if let range = baseName.range(of: " slice\\d+$", options: .regularExpression) {
                 baseName.removeSubrange(range)
             }
 
             // Find a unique suffix for the output file
             var suffix = 1
             repeat {
-                let newFileName = "\(baseName)_slice\(suffix).\(fileExtension)"
+                let newFileName = "\(baseName) slice\(suffix).\(fileExtension)"
                 outputURL = directory.appendingPathComponent(newFileName)
 
                 // If we find a gap (e.g., _slice1 missing), stop checking

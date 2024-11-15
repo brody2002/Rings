@@ -129,6 +129,7 @@ class FilesChecker: ObservableObject {
         
         folderMonitorSource?.setEventHandler { [weak self] in
             DispatchQueue.main.async {
+                print("updating the fileList")
                 self?.updateFileList() // Refresh fileList when there are changes
             }
         }

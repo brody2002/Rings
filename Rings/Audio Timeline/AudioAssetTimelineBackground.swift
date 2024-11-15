@@ -38,6 +38,9 @@ struct AudioAssetTimelineBackground: View {
                         let range = maxValue - minValue
 
                         for (index, value) in waveform.enumerated() {
+                            
+                            
+                            
                             // Normalize and scale the waveform values
                             let normalizedValue = (value - minValue) / range
                             let differentiatedValue = pow(normalizedValue, 2.5)

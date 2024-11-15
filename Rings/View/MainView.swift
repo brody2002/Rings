@@ -21,6 +21,18 @@ struct mainView: View {
     
     @State var fileDirectoryURL: URL?
     
+    func customSort(_ lhs: String, _ rhs: String) -> Bool {
+        // Check if one string is a prefix of the other
+        if lhs.hasPrefix(rhs) || rhs.hasPrefix(lhs) {
+            return lhs.count > rhs.count // Longer string goes first
+        }
+        
+        // Fall back to natural sorting for non-prefix strings
+        return lhs.localizedStandardCompare(rhs) == .orderedAscending
+    }
+    
+    
+
 
     
     var body: some View {
@@ -36,11 +48,12 @@ struct mainView: View {
                             .foregroundColor(AppColors.white)
                             .padding(.top, 20)
                     }
+                    
                     Spacer()
                     VStack{
                         // Limit the scrollable area to the List
                         List {
-                            ForEach(fileChecker.fileList.sorted(by: { $0.name < $1.name })) { file in
+                            ForEach(fileChecker.fileList.sorted(by: { customSort($0.name, $1.name) })) { file in
                                 MainRowView(
                                     fileName: file.name,
                                     fileSize: file.size.toFileSizeString(),
@@ -58,15 +71,10 @@ struct mainView: View {
                                 .cornerRadius(20)
                             }
                             .onDelete { indexSet in
-                                // Sort the file list before deleting to match the displayed order
-                                let sortedFileList = fileChecker.fileList.sorted(by: { $0.name < $1.name })
-
-                                // Delete the items from the original file list based on sorted indices
+                                let sortedFileList = fileChecker.fileList.sorted(by: { customSort($0.name, $1.name) })
                                 indexSet.map { sortedFileList[$0] }.forEach { file in
                                     fileChecker.deleteSongFile(fileName: file.name)
                                 }
-
-                                // Refresh the fileChecker list if necessary
                                 fileChecker.updateFileList()
                             }
                         }

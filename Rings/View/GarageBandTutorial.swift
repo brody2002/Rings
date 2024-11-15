@@ -39,13 +39,18 @@ struct GarageBandTutorial: View {
                     )
                     tutorialStepView(
                         stepNumber: "4",
-                        text: "Press Ringtones and confirm your selection.",
+                        text: "Navigate to \"My Songs\".",
                         imageName: "Step4"
                     )
                     tutorialStepView(
                         stepNumber: "5",
-                        text: "Click Export to complete the ringtone. Now you can use it via Settings → Sounds & Haptics → Ringtones.",
+                        text: "Click the Ringtone Button to export the Audio File as a Ringtone.",
                         imageName: "Step5"
+                    )
+                    tutorialStepView(
+                        stepNumber: "6",
+                        text: "Now you can use it via Settings → Sounds & Haptics → Ringtones.",
+                        imageName: "Step6"
                     )
                 }
                 .tabViewStyle(PageTabViewStyle(indexDisplayMode: .always))
@@ -107,7 +112,7 @@ struct GarageBandTutorial: View {
                     .frame(width: UIScreen.main.bounds.width * 0.7, height: UIScreen.main.bounds.height * 0.2)
                     .cornerRadius(20)
             }
-            else if imageName == "Step1"{
+            else if imageName == "Step1" || imageName == "Step6"{
                 Image(imageName)
                     .resizable()
                     .frame(width: UIScreen.main.bounds.width * 0.6, height: UIScreen.main.bounds.height * 0.475)

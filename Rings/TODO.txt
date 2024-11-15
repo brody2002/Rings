@@ -1,21 +1,10 @@
 Nov 13th
 
-Done: 11. Garage band file creation
-Done: 18. Sort List alphabetically
-Done: 19. Add file checks to reNaming file
-Done: 20. Only show file in the view if it is of m4a format...
-Done: 21. Fixed UI, and other changes with the play button.
-
-
-
 
 
 
 TODO:
-
-12. Make little slide tutorial on how to navigate through garage band after the garageband file has been made
-    * put in the images
-    * make it look nice
+24. Fix file sorting 
 22. Add instagram or SoundCloud feature???
 23. Get a server for $5 for a month...
 
